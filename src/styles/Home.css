@@ -1,0 +1,43 @@
+.contents {
+    margin-top: 70px;
+    padding : 0;
+}
+
+.side-ver {
+    background-color: #f0e8cd;
+    border-radius: 6px;
+    max-width: 240px;
+}
+
+.side-ver-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.category-link {
+    text-align: left;
+    font-size: 14px;
+    font-weight: 600;
+    color: #5b5b5b !important;
+    display: flex !important;
+    align-items: center !important;
+
+}
+
+.title-card {
+    text-align: left;
+}
+
+.title {
+    font-size: 50px;
+    font-weight: 600;
+}
+
+.discription {
+    font-size: 18px;
+}
