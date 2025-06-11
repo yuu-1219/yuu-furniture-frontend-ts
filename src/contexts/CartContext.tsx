@@ -1,15 +1,29 @@
 import axios from "axios";
-
 import { createContext, useState, useContext } from "react";
+import { type PropsWithChildren, type Dispatch, type SetStateAction } from 'react';
 
-import { useUser } from "./UserContext";
+import { type CartType, type CartItemType } from '../types/CartType';
 
-const CartUrl = `${import.meta.env.VITE_API_BASE_URL}/cart`;
+const CartUrl: string = `${import.meta.env.VITE_API_BASE_URL}/cart`;
 
-const CartContext = createContext();
+export interface CartContextType {
+  cart: CartType;
+  setCart: Dispatch<SetStateAction<CartType>>;
+  registerCart: (cartData: CartType) => Promise<CartType | null>;
+  resetCart: () => void;
+  getCart: (userId: string) => Promise<CartType | null>;
+  addToCart: (productId: string, color: string, qty: number, price: number) => Promise<CartType | null>;
+  removeFromCart: (productId: string, color: string, price: number) => Promise<CartType | null>;
+  incrementItem: (productId: string, color: string, price: number) => Promise<CartType | null>;
+  decrementItem: (productId: string, color: string, price: number) => Promise<CartType | null>;
+  clearCart: (userId: string) => Promise<CartType | null>;
+  deleteCart: (userId: string) => Promise<CartType | null>;
+}
 
-export function CartProvider({ children }) {
-  const [cart, setCart] = useState({
+const CartContext = createContext<CartContextType | null>(null);
+
+export function CartProvider({ children }: PropsWithChildren) {
+  const [cart, setCart] = useState<CartType>({
     userId: null,
     items: [],
     totalQty: 0,
@@ -17,9 +31,17 @@ export function CartProvider({ children }) {
     updatedAt: null
   });
 
-  const registerCart = async (cartData) => {
-    const res = await axios.post(CartUrl, cartData);
-    return res.data;
+  const registerCart = async (cartData: CartType) => {
+    try {
+      const res = await axios.post(CartUrl, cartData);
+      return res.data;
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カート情報の登録中にエラーが発生しました";
+        alert(message);
+      }
+    }
+    return null;
   };
 
   const resetCart = () => {
@@ -32,24 +54,27 @@ export function CartProvider({ children }) {
     });
   };
 
-  const getCart = async (userId) => {
+  const getCart = async (userId: string) => {
     try {
       const res = await axios.get(`${CartUrl}/${userId}`);
       setCart(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "カート情報の取得中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カート情報の取得中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
   };
 
 
-  const addToCart = async (productId, color, qty, price) => {
+  const addToCart = async (productId: string, color: string, qty: number, price: number) => {
     const existingItemIndex = cart.items.findIndex(
-      c => c.productId === productId && c.color === color
+      (c: CartItemType) => c.productId === productId && c.color === color
     );
 
-    let updatedItems;
+    let updatedItems: CartItemType[];
 
     if (existingItemIndex !== -1) {
       updatedItems = [...cart.items];
@@ -58,7 +83,7 @@ export function CartProvider({ children }) {
       updatedItems = [...cart.items, { productId: productId, color: color, quantity: qty }];
     }
 
-    const updatedCart = {
+    const updatedCart: CartType = {
       ...cart,
       items: updatedItems,
       totalQty: cart.totalQty + qty,
@@ -74,24 +99,29 @@ export function CartProvider({ children }) {
       const res = await axios.put(`${CartUrl}/${updatedCart.userId}`, updatedCart);
       setCart(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "カートへの追加中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カートへの追加中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
 
-  const removeFromCart = async (productId, color, price) => {
-    const targetItem = cart.items.find(
-      c => c.productId === productId && c.color === color
-    );
-    // if (!targetItem) return;
-
-    const updatedItems = cart.items.filter(
-      c => !(c.productId === productId && c.color === color)
+  const removeFromCart = async (productId: string, color: string, price: number) => {
+    const targetItem: CartItemType | undefined = cart.items.find(
+      (c: CartItemType) => c.productId === productId && c.color === color
     );
 
-    const updatedCart = {
+    if (!targetItem) return null;
+
+    const updatedItems: CartItemType[] = cart.items.filter(
+      (c: CartItemType) => !(c.productId === productId && c.color === color)
+    );
+
+    const updatedCart: CartType = {
       ...cart,
       items: updatedItems,
       totalQty: cart.totalQty - targetItem.quantity,
@@ -107,23 +137,26 @@ export function CartProvider({ children }) {
       const res = await axios.put(`${CartUrl}/${updatedCart.userId}`, updatedCart);
       setCart(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "商品の削除中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "商品の削除中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
-  const incrementItem = async (productId, color, price) => {
-    const updatedItems = cart.items.map(c => {
+  const incrementItem = async (productId: string, color: string, price: number) => {
+    const updatedItems: CartItemType[] = cart.items.map((c: CartItemType) => {
       if (c.productId === productId && c.color === color) {
         return { ...c, quantity: c.quantity + 1 };
       }
       return c;
     });
 
-    const targetItem = cart.items.find(c => c.productId === productId && c.color === color);
 
-    const updatedCart = {
+    const updatedCart: CartType = {
       ...cart,
       items: updatedItems,
       totalQty: cart.totalQty + 1,
@@ -139,23 +172,27 @@ export function CartProvider({ children }) {
       const res = await axios.put(`${CartUrl}/${updatedCart.userId}`, updatedCart);
       setCart(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "カートの操作中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カートの操作中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
-  const decrementItem = async (productId, color, price) => {
-    const targetItem = cart.items.find(
-      c => c.productId === productId && c.color === color
+  const decrementItem = async (productId: string, color: string, price: number) => {
+    const targetItem: CartItemType | undefined = cart.items.find(
+      (c: CartItemType) => c.productId === productId && c.color === color
     );
     if (!targetItem) return;
 
-    let updatedItems;
+    let updatedItems: CartItemType[];
     if (targetItem.quantity === 1) {
       return;
     } else {
-      updatedItems = cart.items.map(c => {
+      updatedItems = cart.items.map((c: CartItemType) => {
         if (c.productId === productId && c.color === color) {
           return { ...c, quantity: c.quantity - 1 };
         }
@@ -163,9 +200,8 @@ export function CartProvider({ children }) {
       });
     }
 
-    const updatedCart = {
+    const updatedCart: CartType = {
       ...cart,
-      // userId: userId,
       items: updatedItems,
       totalQty: cart.totalQty - 1,
       totalPrice: cart.totalPrice - price,
@@ -180,16 +216,18 @@ export function CartProvider({ children }) {
       const res = await axios.put(`${CartUrl}/${updatedCart.userId}`, updatedCart);
       setCart(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "カートの操作中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カートの操作中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
   };
 
 
-  const clearCart = async (userId) => {
-    const clearedCart = {
-      // cartId: cart.cartId,
+  const clearCart = async (userId: string) => {
+    const clearedCart: CartType = {
       userId: userId,
       items: [],
       totalQty: 0,
@@ -203,14 +241,17 @@ export function CartProvider({ children }) {
       const res = await axios.put(`${CartUrl}/${userId}`, clearedCart);
       setCart(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "カート情報の操作中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カート情報の操作中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
 
   };
 
-  const deleteCart = async (userId) => {
+  const deleteCart = async (userId: string) => {
     setCart({
       userId: null,
       items: [],
@@ -222,10 +263,13 @@ export function CartProvider({ children }) {
     try {
       const res = await axios.delete(`${CartUrl}/${userId}`);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "カート情報の削除中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "カート情報の削除中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
   }
 
   return (

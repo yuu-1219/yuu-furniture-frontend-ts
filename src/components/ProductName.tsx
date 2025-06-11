@@ -1,6 +1,11 @@
 import { Box, Typography } from "@mui/material"
 
-export default function ProductName({ productName, fontSize }) {
+interface ProductNameType {
+    productName: string;
+    fontSize: string;
+}
+
+export default function ProductName({ productName, fontSize } : ProductNameType) {
     return (
         <Box
             sx={{
@@ -11,7 +16,7 @@ export default function ProductName({ productName, fontSize }) {
             <Typography
                 style={{
                     fontWeight: "600",
-                    fontSize: {fontSize}
+                    fontSize: fontSize
                 }}
             >
                 {productName}

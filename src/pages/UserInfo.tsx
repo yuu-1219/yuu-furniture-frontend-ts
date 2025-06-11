@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -11,31 +10,40 @@ import Footer from "../components/Footer";
 import BackButton from "../components/BackButton";
 import RunButton from '../components/RunButton';
 import EmailForm from "../components/EmailForm";
-import PasswordForm from "../components/PasswordForm";
 import NameForm from "../components/NameForm";
 
-import { useUser } from "../contexts/UserContext";
-import { useCart } from "../contexts/CartContext";
+import { type UserContextType, useUser } from "../contexts/UserContext";
+import { type CartContextType, useCart } from "../contexts/CartContext";
 
 
 export default function UserInfo() {
-  const { user, setUser, changeUserInfo, deleteUserInfo } = useUser();
-  const { cart, deleteCart } = useCart();
+  const { user, changeUserInfo, deleteUserInfo } = useUser() as UserContextType;
+  if(!user || !user.name || !user.email) return null;
+
+  const { deleteCart } = useCart() as CartContextType;
   const navigate = useNavigate();
 
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  // const [password, setPassword] = useState(user.password);
+  const [name, setName] = useState<string>(user.name);
+  const [email, setEmail] = useState<string>(user.email);
 
-  const handleOnChange = async () => {
+  if (!user) {
+    alert("会員情報変更ページを表示するにはログインが必要です");
+    return null;
+  }
+
+  const handleOnChange = async ()=> {
+    if(!user._id) return;
+
     changeUserInfo(user._id, name, email);
     navigate(`/user/${user._id}`); 
     alert("会員情報を変更しました"); 
   };
 
   const handleDelete = async () => {
+    if(!user._id) return null;
+
     deleteCart(user._id);
-    deleteUserInfo();
+    deleteUserInfo(user._id);
     navigate("/");
     alert("アカウントを削除しました"); 
   }
@@ -74,13 +82,8 @@ export default function UserInfo() {
           >
 
 
-            {/* <h1 class="title">
-              お客様情報の確認・変更
-            </h1> */}
-
             <Typography
               sx={{
-                // fontSize: "50px",
                 fontSize: {
                   xs: "28px",  
                   sm: "36px",  
@@ -88,7 +91,6 @@ export default function UserInfo() {
                   lg: "50px",  
                 },
                 fontWeight: "600",
-                // padding: "0px 50px",
                 padding: {
                   xs: "0px 10px",
                   sm: "0px 20px",
@@ -136,15 +138,6 @@ export default function UserInfo() {
                   <EmailForm email={email} setEmail={setEmail}/>
                 </Box>
 
-                {/* パスワード */}
-                {/* <Box
-                  sx={{
-                    width: "80%",
-                    padding: "10px 0px 0px 0px"
-                  }}
-                >
-                  <PasswordForm password={password} setPassword={setPassword}/>
-                </Box> */}
 
                 {/* 実行ボタン */}
                 <Box
@@ -155,7 +148,7 @@ export default function UserInfo() {
                     width: "35%",
                   }}
                 >
-                  <RunButton text={"変更する"} width={450} handleClick={handleOnChange} />
+                  <RunButton text={"変更する"} handleClick={handleOnChange} />
                 </Box>
 
                 {/* アカウント削除リンク */}
@@ -166,12 +159,11 @@ export default function UserInfo() {
                     padding: "30px 0px",
                     width: "35%",
                     color: "#f36136",
-                    fontSize: "14px",
                     fontSize: {
-                      xs: "12px",  // モバイル
-                      sm: "14px",  // タブレット
-                      md: "16px",  // 中画面
-                      lg: "18px",  // デスクトップ
+                      xs: "12px",  
+                      sm: "14px", 
+                      md: "16px",  
+                      lg: "18px",  
                     },
                     fontWeight: "500",
                     cursor: "pointer"
@@ -184,10 +176,8 @@ export default function UserInfo() {
               </Box>
               {/* (end)入力フォーム*/}
 
-
           </Box>
           {/* (end)タイトル~メインパーツ表示レイアウト */}
-
 
         </Box>
         {/* (end)タイトル~メインパーツ表示領域 */}

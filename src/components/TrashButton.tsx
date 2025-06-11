@@ -1,10 +1,11 @@
-import { useFavorites } from '../contexts/FavoriteContext';
-import { useCart } from '../contexts/CartContext';
-
 import DeleteForeverRoundedIcon from '@mui/icons-material/DeleteForeverRounded';
 
-export default function TrashButton({ productId, removeProduct }) {
-    // const { favorites, toggleFavorite } = useFavorites();
+interface TrachButtonType {
+    productId: string;
+    removeProduct: (productId: string) => void;
+}
+
+export default function TrashButton({ productId, removeProduct } : TrachButtonType) {
     const deleteProduct = () => {
         removeProduct(productId);
     }

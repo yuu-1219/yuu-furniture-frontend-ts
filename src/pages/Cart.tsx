@@ -1,8 +1,7 @@
 import axios from "axios";
 
 import { useState, useEffect } from "react";
-import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
-import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -10,36 +9,26 @@ import Divider from '@mui/material/Divider';
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-import PaginationButton from "../components/PagingButton";
 import BackButton from "../components/BackButton";
 import Price from '../components/Price';
 import RunButton from '../components/RunButton';
-import QtyButton from '../components/QtyButton';
 import CartItem from "../components/CartItem";
 
-import Products from './Products';
+import { type CartContextType, useCart } from '../contexts/CartContext';
+import { type UserContextType, useUser } from "../contexts/UserContext";
 
-import { products } from "../constants/products";
-
-import { useCart } from '../contexts/CartContext';
-import { useUser } from "../contexts/UserContext";
+import { type ProductType } from "../types/ProductType";
+import { type CartItemType } from "../types/CartType";
 
 const ProductsUrl = `${import.meta.env.VITE_API_BASE_URL}/products`;
 
-// const fetchProductsUrl = "http://localhost:3000/products";
-
 
 export default function Cart() {
-  // const fetchProductsUrl = "http://localhost:3000/products";
+  const [cartProducts, setCartProducts] = useState<Record<string, ProductType>>({});
 
-  // const { user, isAuthenticated } = useAuth();
-  const [cartProducts, setCartProducts] = useState([]);
-
-  const { user, isAuthenticated, handlePurchase } = useUser();
-  const { cart, getCart, removeFromCart, incrementItem, declementItem, clearCart } = useCart();
-  const { items, totalQty, totalPrice } = cart;
-  // const { orders, handlePurchase } = useOrders();
+  const { user, isAuthenticated, handlePurchase } = useUser() as UserContextType;
+  const { cart, clearCart } = useCart() as CartContextType;
+  const { items, totalPrice } = cart;
 
   const navigate = useNavigate();
 
@@ -49,22 +38,23 @@ export default function Cart() {
   }, [items, user]);
 
   async function fetchCartProducts() {
-    // const userCart = await getCart(user._id);
     const productIds = [...new Set(cart.items.map(item => item.productId))];
 
     const results = await Promise.all(
       productIds.map(id => axios.get(`${ProductsUrl}/${id}`))
     );
 
-    const resultProducts = {};
+    const resultProducts: Record<string, ProductType> = {};
 
     try {
       results.forEach(res => {
         resultProducts[res.data._id] = res.data;
       });
     } catch (e) {
-      const message = e.response?.data?.message || "商品データの取得中にエラーが発生しました";
-      alert(message);
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "商品データの取得中にエラーが発生しました";
+        alert(message);
+      }
     }
 
     setCartProducts(resultProducts);
@@ -78,8 +68,14 @@ export default function Cart() {
       navigate("/login");
       return;
     }
+    if(!user._id) return;
 
-    const { orderId, purchasedAt } = await handlePurchase(cart);
+    const purchaseResult = await handlePurchase(cart);
+    if (!purchaseResult) {
+      alert("購入処理に失敗しました");
+      return;
+    }
+    const { orderId, purchasedAt } = purchaseResult;
 
     await clearCart(user._id);
 
@@ -116,10 +112,6 @@ export default function Cart() {
               width: "90%",
               padding: "30px 30px",
               margin: "30px 30px",
-              // maxWidth: "800px",
-              // backgroundColor: "rgba(251, 245, 230, 0.8)",
-              // borderRadius: "10px",
-              // border: "0.2px solid #eee9d3",
               display: "flex",
               flexDirection: "column",
               justifyContent: "flex-start",
@@ -127,13 +119,9 @@ export default function Cart() {
             }}
           >
 
-            {/* <h1 class="title">
-              カート
-            </h1> */}
 
             <Typography
               sx={{
-                // fontSize: "50px",
                 fontSize: {
                   xs: "28px",
                   sm: "36px",
@@ -141,7 +129,6 @@ export default function Cart() {
                   lg: "50px",
                 },
                 fontWeight: "600",
-                // padding: "0px 50px",
                 padding: {
                   xs: "0px 10px",
                   sm: "0px 15px",
@@ -181,9 +168,6 @@ export default function Cart() {
                   margin: "0px 0px 0px 0px",
                   width: { xs: "100%", sm: "100%", md: "70%" },
                   minWidth: "300px",
-                  // backgroundColor: "rgba(251, 245, 230, 0.8)",
-                  // borderRadius: "10px",
-                  // border: "0.2px solid #eee9d3",
                   display: "flex",
                   flexWrap: "wrap",
                   flexDirection: "column",
@@ -192,8 +176,8 @@ export default function Cart() {
                 }}
               >
 
-                {items.map((item) => {
-                  const product = cartProducts[item.productId];
+                {items.map((item: CartItemType) => {
+                  const product: ProductType = cartProducts[item.productId];
                   if (!product) return null;
                   return (
                     <>
@@ -230,7 +214,6 @@ export default function Cart() {
                     sm: "auto",
                     md: "100%",
                   },
-                  // maxHeight: "420px",
                   maxHeight: {
                     xs: "none",
                     sm: "none",
@@ -255,7 +238,6 @@ export default function Cart() {
 
                 <Typography
                   sx={{
-                    fontSize: "26px",
                     fontSize: {
                       xs: "18px",
                       sm: "20px",
@@ -300,13 +282,12 @@ export default function Cart() {
                       width: "60%"
                     }}
                   >
-                    <Price price={totalPrice} priceSize={24} unitSize={16} priceWidth={58} />
+                    <Price price={totalPrice} />
                   </Typography>
                 </Box>
                 {/* (end)商品代金 */}
 
 
-                {/* <br /> */}
                 <Divider sx={{ width: '100%', my: 1 }} />
 
 
@@ -341,13 +322,12 @@ export default function Cart() {
                       width: "60%"
                     }}
                   >
-                    <Price price={750} priceSize={24} unitSize={16} priceWidth={58} />
+                    <Price price={750} />
                   </Typography>
                 </Box>
                 {/* (end)商品代金 */}
 
 
-                {/* <br /> */}
                 <Divider sx={{ width: '100%', my: 1 }} />
 
 
@@ -380,7 +360,7 @@ export default function Cart() {
                       width: "60%"
                     }}
                   >
-                    <Price price={750 + totalPrice} priceSize={24} unitSize={16} priceWidth={58} />
+                    <Price price={750 + totalPrice} />
                   </Typography>
                 </Box>
                 {/* (end)合計代金 */}
@@ -395,7 +375,7 @@ export default function Cart() {
                     width: "70%"
                   }}
                 >
-                  <RunButton text={"購入する"} width={650} handleClick={onClickPurchase} />
+                  <RunButton text={"購入する"} handleClick={onClickPurchase} />
                 </Box>
               </Box>
 
@@ -423,7 +403,6 @@ export default function Cart() {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            // height: "100vh"   
           }}
         >
 

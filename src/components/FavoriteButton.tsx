@@ -1,13 +1,19 @@
-import { useUser } from '../contexts/UserContext';
+import { type UserContextType, useUser } from '../contexts/UserContext';
 
 import IconButton from '@mui/material/IconButton';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 
-export default function FavoriteButton({ userId, productId, color }) {
-    const { user, toggleFavorite } = useUser();
-    const isFavorited = user?.favorites?.some(c => c.productId === productId && c.color === color);
-    // const isFavorited = 1;
+
+interface FavoriteButtonProps {
+    userId: string | null;
+    productId: string;
+    color: string
+  }
+
+export default function FavoriteButton({ userId, productId, color } : FavoriteButtonProps) {
+    const { user, toggleFavorite } = useUser() as UserContextType;
+    const isFavorited: boolean = user!.favorites.some(c => c.productId === productId && c.color === color);
 
 
     return (
@@ -19,19 +25,5 @@ export default function FavoriteButton({ userId, productId, color }) {
             )}
         </IconButton>
 
-        // isFavorited ?
-        //     <FavoriteIcon
-        //         onClick={() => toggleFavorite(productId)}
-        //         style={{
-        //             color: "red"
-        //         }}
-        //     />
-        //     : 
-        //     <FavoriteBorderIcon 
-        //         onClick={() => toggleFavorite(productId)}
-        //         // style={{
-        //         //     fontSize: "10px"
-        //         // }}
-        //     />
     );
 }

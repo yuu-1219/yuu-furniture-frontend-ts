@@ -1,28 +1,36 @@
-import * as React from 'react';
-import { Link } from "react-router-dom";
+import { type Dispatch, type SetStateAction } from 'react';
 
 import AppBar from '@mui/material/AppBar';
 import { Toolbar } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import FormHelperText from '@mui/material/FormHelperText';
+import { type SelectChangeEvent, Select } from '@mui/material';
 
-import { onFilters } from '../constants/onFilters';
+import { type onFilterType, onFilters } from '../constants/onFilters';
+import { type ProductType } from '../types/ProductType';
 
-export default function SearchResultBar({ products, currentPage, perPage, onFilter, setOnFilter }) {
-    const { onFiltersId, label } = onFilter;
-    const firstProductNum = (currentPage - 1) * perPage + 1;
-    const lastProductNum = currentPage * perPage > products.length ? products.length : currentPage * perPage;
+interface SearchResultBarType {
+    products: ProductType[];
+    currentPage: number;
+    perPage: number;
+    onFilter: onFilterType;
+    setOnFilter: Dispatch<SetStateAction<onFilterType>>;
+}
+
+export default function SearchResultBar({ products, currentPage, perPage, onFilter, setOnFilter }: SearchResultBarType) {
+    const { onFiltersId } = onFilter;
+    const firstProductNum: number = (currentPage - 1) * perPage + 1;
+    const lastProductNum: number = currentPage * perPage > products.length ? products.length : currentPage * perPage;
 
 
-    const handleChange = (event) => {
-        const selectedId = event.target.value;
+    const handleChangeFilter = (e: SelectChangeEvent) => {
+        const selectedId = e.target.value;
         const selectedFilter = onFilters.find((c) => c.onFiltersId === selectedId);
-        setOnFilter(selectedFilter);
+        if (selectedFilter) {
+            setOnFilter(selectedFilter);
+        }
     };
 
     return (
@@ -39,6 +47,8 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                         color: "#5b5b5b"
                     }}
                 >
+
+                    {/* (start)件数表示 */}
                     <Box
                         sx={{
                             margin: "0px 15px 0px 0px",
@@ -48,7 +58,6 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                     >
 
                         <Typography
-                            // variant="span"
                             sx={{
                                 fontSize: {
                                     xs: "12px",
@@ -62,9 +71,7 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                         </Typography>
 
                         <Typography
-                            // variant="h6"
                             sx={{
-                                // fontSize: "20px",
                                 fontSize: {
                                     xs: "16px",
                                     md: "20px"
@@ -73,13 +80,11 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                                 margin: "0px 5px 0px 0px"
                             }}
                         >
-                            {(products.length !== 0) ? products.length : 0 }
+                            {(products.length !== 0) ? products.length : 0}
                         </Typography>
 
                         <Typography
-                            // variant="span"
                             sx={{
-                                // fontSize: "14px",
                                 fontSize: {
                                     xs: "12px",
                                     md: "14px"
@@ -91,20 +96,10 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                             件中
                         </Typography>
 
-                    {/* </Box>
 
-                    <Box
-                        sx={{
-                            margin: "0px 15px 0px 0px",
-                            display: "flex",
-                            alignItems: "baseline",
-                        }}
-                    > */}
 
                         <Typography
-                            // variant="span"
                             sx={{
-                                // fontSize: "18px",
                                 fontSize: {
                                     xs: "16px",
                                     md: "18px"
@@ -113,12 +108,11 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                                 margin: "0px 2px 0px 0px"
                             }}
                         >
-                            {(products.length !== 0) ? firstProductNum : 0 }
+                            {(products.length !== 0) ? firstProductNum : 0}
                         </Typography>
 
                         <Typography
                             sx={{
-                                // fontSize: "14px",
                                 fontSize: {
                                     xs: "12px",
                                     md: "14px"
@@ -131,7 +125,6 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
 
                         <Typography
                             sx={{
-                                // fontSize: "18px",
                                 fontSize: {
                                     xs: "16px",
                                     md: "18px"
@@ -145,7 +138,6 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
 
                         <Typography
                             sx={{
-                                fontSize: "13px",
                                 fontSize: {
                                     xs: "12px",
                                     md: "14px"
@@ -157,9 +149,12 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                             件
                         </Typography>
                     </Box>
+                    {/* (end)件数表示 */}
 
 
 
+
+                    {/* (start)絞り込み条件 */}
                     <Box sx={{ flexGrow: 1 }} />
                     <Box
                         sx={{
@@ -179,9 +174,8 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                         >
                             <Select
                                 value={onFiltersId}
-                                onChange={handleChange}
+                                onChange={handleChangeFilter}
                                 displayEmpty
-                                // inputProps={{ 'aria-label': 'Without label' }}
                                 sx={{
                                     fontSize: "12px",
                                     fontWeight: "500",
@@ -201,9 +195,10 @@ export default function SearchResultBar({ products, currentPage, perPage, onFilt
                                     </MenuItem>
                                 ))}
                             </Select>
-                            {/* <FormHelperText>Without label</FormHelperText> */}
                         </FormControl>
                     </Box>
+                    {/* (end)絞り込み条件 */}
+
 
                 </Toolbar>
             </AppBar>

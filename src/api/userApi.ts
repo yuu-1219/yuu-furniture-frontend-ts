@@ -1,9 +1,11 @@
 import api from './index';
 
-export const registerUser = (userData) => {
+import { type UserType } from "../types/UserType";
+
+export const registerUser = (userData: UserType) => {
   return api.post('/users/register', userData);
 };
 
-export const loginUser = (credentials) => {
+export const loginUser = (credentials: string) => {
   return api.post('/users/login', credentials);
 };

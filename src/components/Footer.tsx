@@ -1,6 +1,3 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
-
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -11,8 +8,6 @@ function Footer() {
     <AppBar 
       component="footer" 
       sx={{ 
-        // top: 'auto', 
-        // bottom: 0, 
         backgroundColor: "#e6d9ac", 
         color: "#5b5b5b",
         position: "static"
@@ -26,7 +21,6 @@ function Footer() {
           variant="body1" 
           sx={{ 
             display: { xs: 'none', sm: 'block' }, 
-            // visibility: { xs: 'hidden', sm: 'visible' },
             flexGrow: 1, 
             textAlign: 'center', 
             justifyContent: 'center' }}
@@ -37,7 +31,7 @@ function Footer() {
         <Box
           sx={{
             display: { xs: 'block', sm: 'none' },
-            width: '400px' // ロゴと同じ幅でバランスをとる
+            width: '400px' 
           }}
         >
         </Box>
@@ -53,16 +47,16 @@ function Footer() {
         >
           <Typography
             noWrap
-            component={Link}
-            sx={{ display: { xs: 'frex'}, fontWeight: "700", fontSize: "12px", textDecoration: 'none', color: 'inherit' }}
+            // component={Link}
+            sx={{ display: { xs: 'flex'}, fontWeight: "700", fontSize: "12px", textDecoration: 'none', color: 'inherit' }}
           >
             よくある質問(FAQ)
           </Typography>
 
           <Typography
             noWrap
-            component={Link}
-            sx={{ display: { xs: 'frex', fontWeight: "700", fontSize: "12px", textDecoration: 'none', color: 'inherit' } }}
+            // component={Link}
+            sx={{ display: { xs: 'flex', fontWeight: "700", fontSize: "12px", textDecoration: 'none', color: 'inherit' } }}
           >
             お問い合わせ
           </Typography>

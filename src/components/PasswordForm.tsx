@@ -1,12 +1,19 @@
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, type ChangeEvent} from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from "@mui/material/TextField"
 
-export default function PasswordForm({ text, password, setPassword }) {
-    // const [password, setPassword] = useState("");
-    const UpdatePassword = (e) => {
+
+interface PasswordFormProps {
+    text: string
+    password: string;
+    setPassword: Dispatch<SetStateAction<string>>;
+}
+
+
+export default function PasswordForm({ text, password, setPassword } : PasswordFormProps) {
+    const UpdatePassword = (e: ChangeEvent<HTMLInputElement>) => {
         const updatedPassword = e.target.value;
         setPassword(updatedPassword);
     }
@@ -20,14 +27,11 @@ export default function PasswordForm({ text, password, setPassword }) {
                     sm: "row"
                 },
                 alignItems: "center",
-                // gap: "30px",
                 margin: "0px",
-                // maxWidth: "600px",     
                 width: "100%"
             }}
         >
             <Typography
-                HTMLFor="password"
                 component="label"
                 sx={{
                     fontSize: {
@@ -37,7 +41,6 @@ export default function PasswordForm({ text, password, setPassword }) {
                         lg: "16px"
                     },
                     fontWeight: "600",
-                    // width: "20%",
                     width: {
                         xs: "100%",
                         sm: "30%",
@@ -53,13 +56,9 @@ export default function PasswordForm({ text, password, setPassword }) {
                 type="password"
                 id="password"
                 name="password"
-                // placeholder=""
                 value={password}
                 onChange={UpdatePassword}
                 sx={{
-                    // height: "35px",
-                    // width : "450px",
-                    // width: "80%",
                     width: {
                         xs: "100%",
                         sm: "70%",
@@ -77,7 +76,6 @@ export default function PasswordForm({ text, password, setPassword }) {
                     }
                 }}
             />
-
 
 
         </Box>

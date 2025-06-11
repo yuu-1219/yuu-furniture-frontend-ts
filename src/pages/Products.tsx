@@ -2,53 +2,44 @@ import '../styles/Products.css'
 
 import axios from "axios";
 
-import * as React from 'react';
-import { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { type ChangeEvent, useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import Box from '@mui/material/Box';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Rating from "@mui/material/Rating";
 
-import { colors } from '../constants/colors';
-import { priceRanges } from "../constants/priceRanges";
-import { categories } from "../constants/categories";
-import { onFilters } from "../constants/onFilters";
-// import { products } from "../constants/products";
+import { type CategoryType, categories } from "../constants/categories";
+import { type onFilterType, onFilters } from "../constants/onFilters";
+import { type ColorType } from '../constants/colors';
+import { type PriceRangeType } from "../constants/priceRanges";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
 import ProductCard from "../components/ProductCard";
-import ColorCard from "../components/ColorCard";
-import PriceCard from "../components/PriceCard";
 import SearchResultBar from "../components/SearchResultBar";
 import PaginationButton from "../components/PagingButton";
 import BackButton from "../components/BackButton";
 import ConditionCard from '../components/ConditionCard';
 
-const ProductsUrl = `${import.meta.env.VITE_API_BASE_URL}/products`;
+import { type ProductType } from "../types/ProductType";
+
+const ProductsUrl: string = `${import.meta.env.VITE_API_BASE_URL}/products`;
 
 
 export default function Products() {
-  // const fetchProductsUrl = "http://localhost:3000/products";
 
-  const [products, setProducts] = useState([]);
-  const [onColors, setOnColors] = useState([]);
-  const [onPriceRanges, setOnPriceRanges] = useState([]);
-  const [onFilter, setOnFilter] = useState(onFilters[0]);
+  const [products, setProducts] = useState<ProductType[]>([]);
+  const [onColors, setOnColors] = useState<ColorType[]>([]);
+  const [onPriceRanges, setOnPriceRanges] = useState<PriceRangeType[]>([]);
+  const [onFilter, setOnFilter] = useState<onFilterType>(onFilters[0]);
   const [currentPage, setCurrentPage] = useState(1);
 
   const [searchParams] = useSearchParams();
-  const onCategoryId = searchParams.get("category");
-  const onCategory = categories.find(c => c.categoryId === onCategoryId);
-  const queryString = onCategory ? `?category=${onCategoryId}` : "";
+  const onCategoryId: string | null = searchParams.get("category");
+  const onCategory: CategoryType = categories.find(c => c.categoryId === onCategoryId)!;
+  // const queryString = onCategory ? `?category=${onCategoryId}` : "";
 
   const searchWord = searchParams.get("search");
-  // const [searchWord, setSearchWord] = useState({inputWord});
 
   useEffect(() => {
     fetchProducts();
@@ -68,14 +59,16 @@ export default function Products() {
       });
       const sortedProducts = sortProducts(productsResult.data);
       setProducts(sortedProducts);
-    } catch (e) {
-      const message = e.response?.data?.message || "商品データの取得中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "商品データの取得中にエラーが発生しました";
+        alert(message);
+      }
     }
   }
 
-  function sortProducts(targetProducts = []) {
-    const sortedProducts = [...targetProducts].sort((a, b) => {
+  function sortProducts(targetProducts: ProductType[] = []) {
+    const sortedProducts: ProductType[] = [...targetProducts].sort((a: ProductType, b: ProductType) => {
       switch (onFilter.onFiltersId) {
         // case "1": return a.name - b.name;
         case "2": return a.price - b.price;
@@ -91,14 +84,14 @@ export default function Products() {
   }
 
 
-  const perPage = 8;
-  const totalPages = Math.ceil(products.length / perPage);
-  const showProducts = products.slice(
+  const perPage: number = 8;
+  const totalPages: number = Math.ceil(products.length / perPage);
+  const showProducts: ProductType[] = products.slice(
     (currentPage - 1) * perPage,
     currentPage * perPage
   )
 
-  const handlePageChange = (e, value) => {
+  const handlePageChange = (_: ChangeEvent<unknown>, value: number) => {
     setCurrentPage(value);
   };
 
@@ -162,11 +155,6 @@ export default function Products() {
                     lg: "40px",
                   },
                   fontWeight: "600",
-                  // padding: {
-                  //   xs: "0px 10px",
-                  //   sm: "0px 15px",
-                  //   md: "0px 20px",
-                  // },
                   textAlign: "left"
                 }}>
                 {onCategory ? onCategory.categoryLabel : "すべての商品"}
@@ -197,10 +185,6 @@ export default function Products() {
             {/* (end)タイトル文 */}
 
 
-
-
-
-
             {/* (start)条件カード、商品一覧 */}
             <Box
               sx={{
@@ -210,7 +194,6 @@ export default function Products() {
                   xs: "0px 0px 20px 0px",
                   md: "0px 0px 20px 0px",
                 },
-                // maxWidth: "800px",
                 display: "flex",
                 flexDirection: {
                   xs: "column",
@@ -261,16 +244,13 @@ export default function Products() {
                 <Box
                   sx={{
                     width: "100%",
-                    // height: "100%",
-                    height: {
-                      xs: "23%",
-                      sm: "30%",
-                      md: "30%",
-                      lg: "44%"
-                    },
+                    // height: {
+                    //   xs: "23%",
+                    //   sm: "30%",
+                    //   md: "30%",
+                    //   lg: "44%"
+                    // },
                     height: "auto",
-                    // aspectRatio: "64 / 17",
-                    // minHeight: "270px",
                     margin: "20px 5px 0px 5px",
                     display: "flex",
                     flexWrap: "wrap",
@@ -284,61 +264,15 @@ export default function Products() {
                   {showProducts.map((product) => (
                     <ProductCard
                       product={product}
-                    // products={products}
                     />
                   ))}
 
-                  {/* {showProducts.length < 8 &&
-                    Array.from({ length: 8 - showProducts.length }).map((_, index) => (
-                      <Box
-                       
-                        sx={{
 
-                          // width: "100%",
-                          width: {
-                            xs: "45%",
-                            sm: "31%",
-                            md: "30%",
-                            lg: "23%"
-                          },
-                          height: "100%",
-                          // maxHeight: "260px",
-                          // minWidth: "200px",
-                          // minHeight: "100px",
-                          padding: "16px",
-                          backgroundColor: "rgba(251, 245, 230, 0.8)",
-                          borderRadius: "6px",
-                          border: "0.2px solid #eee9d3",
-                          textDecoration: "none",
-                          color: "inherit",
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "flex-start",
-                          justifyContent: "flex-start",
-
-                        }}>
-
-                        <Box
-                          sx={{
-                            height: "100%",
-                            padding: "5px 0px 0px 10px",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-start",
-                            justifyContent: "flex-start",
-                          }}
-                        >
-                        </Box>
-
-                      </Box>
-                    ))} */}
-
-
-                    
                 </Box>
                 {/* (end)商品一覧 */}
 
-              </Box> {/* (start)サーチバー、商品一覧 */}
+              </Box>
+              {/* (end)サーチバー、商品一覧 */}
 
 
 
@@ -359,7 +293,6 @@ export default function Products() {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            // height: "100vh"   
           }}
         >
           <Box

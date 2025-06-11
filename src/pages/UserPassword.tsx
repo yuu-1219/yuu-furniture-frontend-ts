@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -10,21 +9,30 @@ import Footer from "../components/Footer";
 
 import BackButton from "../components/BackButton";
 import RunButton from '../components/RunButton';
-import EmailForm from "../components/EmailForm";
 import PasswordForm from "../components/PasswordForm";
-import NameForm from "../components/NameForm";
 
-import { useUser } from "../contexts/UserContext";
+import { type UserContextType, useUser } from "../contexts/UserContext";
 
 
 export default function UserPassword() {
-    const { user, setUser, changeUserInfo, changeUserPassword } = useUser();
+    const { user, changeUserPassword } = useUser() as UserContextType;
     const navigate = useNavigate();
 
-    const [newPassword, setNewPassword] = useState("");
-    const [verifiedPassword, setverifiedPassword] = useState("");
+    const [newPassword, setNewPassword] = useState<string>("");
+    const [verifiedPassword, setverifiedPassword] = useState<string>("");
+
+    if (!user) {
+        alert("パスワード変更ページを表示するにはログインが必要です");
+        return null;
+    }
+
+
 
     const handleOnChange = async () => {
+        if (!user._id) {
+            alert("ユーザー情報が見つかりませんでした");
+            return;
+        }
 
         if (newPassword === verifiedPassword) {
             if (newPassword.length > 4) {
@@ -76,13 +84,8 @@ export default function UserPassword() {
                     >
 
 
-                        {/* <h1 class="title">
-              お客様情報の確認・変更
-            </h1> */}
-
                         <Typography
                             sx={{
-                                // fontSize: "50px",
                                 fontSize: {
                                     xs: "28px",
                                     sm: "36px",
@@ -90,7 +93,6 @@ export default function UserPassword() {
                                     lg: "50px",
                                 },
                                 fontWeight: "600",
-                                // padding: "0px 50px",
                                 padding: {
                                     xs: "0px 10px",
                                     sm: "0px 20px",
@@ -149,7 +151,7 @@ export default function UserPassword() {
                                     width: "35%",
                                 }}
                             >
-                                <RunButton text={"変更する"} width={450} handleClick={handleOnChange} />
+                                <RunButton text={"変更する"}  handleClick={handleOnChange} />
                             </Box>
 
 

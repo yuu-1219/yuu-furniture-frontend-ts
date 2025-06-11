@@ -1,11 +1,14 @@
 import { Box, Typography } from "@mui/material"
 
-export default function Price({ price, priceSize = 20, unitSize = 12, height = 0.8, priceWidth = 50 }) {
+interface PriceType {
+    price: number;
+}
+
+export default function Price({ price }: PriceType) {
     return (
         <Box
             sx={{
                 width: "100%",
-                // maxWidth: "100px",
                 display: 'flex',
                 justifyContent: 'flex-start',
                 alignItems: 'baseline',

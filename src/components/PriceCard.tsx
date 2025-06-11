@@ -1,15 +1,22 @@
-import * as React from 'react';
+import { type Dispatch, type SetStateAction } from 'react';
+
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Checkbox from '@mui/material/Checkbox';
 
+import { type PriceRangeType } from "../constants/priceRanges.ts"
 
-export default function PriceCard({ priceRange, onPriceRanges, setOnPriceRanges }) {
+interface PriceCardType {
+    priceRange: PriceRangeType ;
+    onPriceRanges: PriceRangeType [];
+    setOnPriceRanges: Dispatch<SetStateAction<PriceRangeType []>>;
+}
+
+export default function PriceCard({ priceRange, onPriceRanges, setOnPriceRanges }: PriceCardType) {
     const { priceRangeId, minPrice, maxPrice } = priceRange;
 
-    const isSelected = onPriceRanges.includes(priceRange);
-    // const isSelected = true;
+    const isSelected: boolean = onPriceRanges.includes(priceRange);
 
     const label = { inputProps: { 'aria-label': priceRangeId } };
 
@@ -19,7 +26,6 @@ export default function PriceCard({ priceRange, onPriceRanges, setOnPriceRanges 
         } else {
             setOnPriceRanges([...onPriceRanges, priceRange]);
         }
-
     }
 
 
@@ -44,25 +50,14 @@ export default function PriceCard({ priceRange, onPriceRanges, setOnPriceRanges 
 
             <Checkbox
                 {...label}
-                // defaultChecked
                 size="small"
                 onClick={handleToggle}
             />
 
 
-            {/* <p style={{
-                fontWeight: "500",
-                fontSize: "13px",
-                marginBottom: "0px"
-            }}>
-                {priceRangeId !== "5" ?`¥ ${minPrice} - ${maxPrice}` : `¥ ${minPrice} +`}
-                
-            </p> */}
-
             <Typography
                 sx={{
                     fontWeight: "500",
-                    fontSize: "13px",
                     fontSize: {
                         xs: "10px",
                         sm: "12px",

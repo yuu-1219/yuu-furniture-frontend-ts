@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, type ChangeEvent} from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from "@mui/material/TextField"
 
-export default function EmailForm({ email, setEmail }) {
-    // const [email, setEmail] = useState("");
-    const UpdateEmail = (e) => {
+
+interface EmailFormProps {
+    email: string;
+    setEmail: Dispatch<SetStateAction<string>>;
+}
+
+export default function EmailForm({ email, setEmail } : EmailFormProps) {
+    const UpdateEmail = (e: ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);
     }
 
@@ -19,15 +24,11 @@ export default function EmailForm({ email, setEmail }) {
                     sm: "row"
                 },
                 alignItems: "center",
-                // flexWrap: "wrap",  
-                // gap: "30px",
                 margin: "0px",
-                // maxWidth: "600px",     
                 width: "100%"
             }}
         >
             <Typography
-                HTMLFor="email"
                 component="label"
                 sx={{
                     fontSize: {
@@ -37,7 +38,6 @@ export default function EmailForm({ email, setEmail }) {
                         lg: "18px"
                     },
                     fontWeight: "600",
-                    // width: "30%",
                     width: {
                         xs: "100%",
                         sm: "30%",
@@ -57,9 +57,6 @@ export default function EmailForm({ email, setEmail }) {
                 value={email}
                 onChange={UpdateEmail}
                 sx={{
-                    // height: "35px",
-                    // width : "450px",
-                    // width: "70%",
                     width: {
                         xs: "100%",
                         sm: "70%",

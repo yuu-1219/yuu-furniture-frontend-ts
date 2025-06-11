@@ -1,19 +1,27 @@
-import { useState } from "react";
+// import { useState } from "react";
+import { type Dispatch, type SetStateAction } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-
 import CheckIcon from '@mui/icons-material/Check';
-import { StoreMallDirectory } from '@mui/icons-material';
 
-export default function ColorCard({ color, onColors, setOnColors }) {
+import { type ColorType } from "../constants/colors";
+
+
+interface ColorCardProps {
+    color: ColorType;
+    onColors: ColorType[];
+    setOnColors: Dispatch<SetStateAction<ColorType[]>>;
+}
+
+export default function ColorCard({ color, onColors, setOnColors } : ColorCardProps) {
     const { colorId, colorLabel, hex } = color;
 
-    const isSelected = onColors.includes(color);
+    const isSelected: boolean = onColors.includes(color);
 
     const handleToggle = () => {
         if (isSelected) {
-            setOnColors(onColors.filter(c => c.colorId !== colorId));
+            setOnColors(onColors.filter((c:ColorType) => c.colorId !== colorId));
         } else {
             setOnColors([...onColors, color]);
         }
@@ -23,11 +31,9 @@ export default function ColorCard({ color, onColors, setOnColors }) {
         <Box
             sx={{
                 display: "flex",
-                // flexWrap: "wrap",
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "center",
-                width: "100%",
                 width: {
                     xs: "44px",
                     sm: "50px",
@@ -40,8 +46,6 @@ export default function ColorCard({ color, onColors, setOnColors }) {
                     md: "46px",
                     lg: "50px",
                 },
-                // maxWidth: "50px",
-                // maxHeight: "50px",
                 padding: "2px",
                 margin: {
                     xs: "1px",
@@ -68,7 +72,6 @@ export default function ColorCard({ color, onColors, setOnColors }) {
                     md: "25px",
                     lg: "28px"
                 },
-                height: "25px",
                 height: {
                     xs: "25px",
                     sm: "25px",
@@ -100,7 +103,6 @@ export default function ColorCard({ color, onColors, setOnColors }) {
                 sx={{
                     width: "100%",
                     fontWeight: "500",
-                    fontSize: "10px",
                     fontSize: {
                         xs: "9px",
                         sm: "10px",

@@ -1,29 +1,32 @@
-import { useState } from "react";
-
-import { Link } from "react-router-dom";
+import { type Dispatch, type SetStateAction } from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-import Divider from '@mui/material/Divider';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 import ColorCard from "./ColorCard";
 import PriceCard from "../components/PriceCard";
 
-import { colors } from '../constants/colors';
-import { priceRanges } from "../constants/priceRanges";
+import { type ColorType, colors } from '../constants/colors';
+import { type PriceRangeType, priceRanges } from "../constants/priceRanges";
 
 
-export default function ConditionCard({ onColors, setOnColors, onPriceRanges, setOnPriceRanges }) {
-    // const [onColors, setOnColors] = useState([]);
-    // const [onPriceRanges, setOnPriceRanges] = useState(priceRanges);
+interface ConditionCardProps {
+    onColors: ColorType[];
+    setOnColors: Dispatch<SetStateAction<ColorType[]>>;
+    onPriceRanges: PriceRangeType[];
+    setOnPriceRanges: Dispatch<SetStateAction<PriceRangeType[]>>;
 
+}
+
+
+export default function ConditionCard({ onColors, setOnColors, onPriceRanges, setOnPriceRanges } : ConditionCardProps) {
+  
     return (
         <>
 
@@ -34,12 +37,10 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                     height: "100%",
                     padding: "15px 10px 10px 0px",
                     margin: "0px 0px",
-                    // maxWidth: "800px",
                     backgroundColor: "rgba(251, 245, 230, 0.8)",
                     borderRadius: "10px",
                     border: "0.2px solid #eee9d3",
                     display: "flex",
-                    // flexDirection: "column",
                     flexDirection: {
                         xs: "column",
                         md: "column",
@@ -88,9 +89,7 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                             margin: "20px 0px 0px 10px",
                             padding: "0px 0px 0px 0px",
                             width: { xs: "50%", md: "95%" },
-                            // width: "100%",
                             height: "100%",
-                            // minWidth: "300px",
                             display: "flex",
                             flexWrap: "wrap",
                             flexDirection: {
@@ -107,12 +106,10 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                         }}
                     >
                         <Accordion
-                            // defaultExpanded
                             sx={{
                                 width: "100%",
                                 backgroundColor: "#fbf5e6",
                                 borderRadius: "6px",
-                                // maxWidth: "240px"
 
                             }}
                         >
@@ -121,9 +118,7 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                {/* <div class="condition-name">
-                                    カラー
-                                </div> */}
+                              
                                 <Typography
                                     className="condition-name"
                                     sx={{
@@ -133,9 +128,8 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                                             md: "90%",
                                             lg: "80%"
                                         },
-                                        backgroundColor: (onColors.length === 0) ? "#faf6ec": "#f1e8ab",
+                                        backgroundColor: (onColors.length === 0) ? "#faf6ec" : "#f1e8ab",
                                         padding: "0px 0px 0px 10px",
-                                        // fontSize: "18px",
                                         fontSize: {
                                             xs: "12px",
                                             sm: "14px",
@@ -163,11 +157,10 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                                             md: "flex-start",
                                             lg: "flex-start"
                                         },
-                                        // gap: "2px", 
                                     }}
 
                                 >
-                                    {colors.map((color) => (
+                                    {colors.map((color: ColorType) => (
                                         <ColorCard color={color} onColors={onColors} setOnColors={setOnColors} />
                                     ))}
 
@@ -186,9 +179,7 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                             margin: "20px 0px 0px 10px",
                             padding: "0px 0px 0px 0px",
                             width: { xs: "50%", md: "95%" },
-                            // width: "100%",
                             height: "100%",
-                            // minWidth: "300px",
                             display: "flex",
                             flexWrap: "wrap",
                             flexDirection: {
@@ -205,12 +196,10 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                         }}
                     >
                         <Accordion
-                            // defaultExpanded
                             sx={{
                                 width: "100%",
                                 backgroundColor: "#fbf5e6",
                                 borderRadius: "6px",
-                                // maxWidth: "240px"
                             }}
                         >
                             <AccordionSummary
@@ -218,9 +207,6 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                                 aria-controls="panel1-content"
                                 id="panel1-header"
                             >
-                                {/* <div class="condition-name">
-                                    価格
-                                </div> */}
 
                                 <Typography
                                     className="condition-name"
@@ -231,7 +217,7 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                                             md: "90%",
                                             lg: "80%"
                                         },
-                                        backgroundColor: (onPriceRanges.length === 0) ? "#faf6ec": "#f1e8ab",
+                                        backgroundColor: (onPriceRanges.length === 0) ? "#faf6ec" : "#f1e8ab",
                                         padding: "0px 0px 0px 0px",
                                         fontSize: {
                                             xs: "12px",
@@ -264,7 +250,7 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
                                     }}
                                 >
                                     {
-                                        priceRanges.map((priceRange) => (
+                                        priceRanges.map((priceRange: PriceRangeType) => (
                                             <PriceCard priceRange={priceRange} onPriceRanges={onPriceRanges} setOnPriceRanges={setOnPriceRanges} />
                                         ))
                                     }
@@ -284,70 +270,3 @@ export default function ConditionCard({ onColors, setOnColors, onPriceRanges, se
     )
 }
 
-
-{/* <nav class="nav-ver side-ver col-3 px-2 py-3 my-4">
-              <ul class="nav side-ver-items">
-                <li class="nav-item condition-title">
-                  <p class="condition-title">条件で絞り込む</p>
-                </li>
-                <li class="nav-item condition">
-                  <Accordion
-                    defaultExpanded
-                    sx={{
-                      backgroundColor: "#fbf5e6",
-                      borderRadius: "6px",
-                      maxWidth: "240px"
-                    }}
-                  >
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1-content"
-                      id="panel1-header"
-                    >
-                      <div class="condition-name">
-                        カラー
-                      </div>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Box className="condition-item">
-                        {
-                          colors.map((color) => (
-                            <ColorCard color={color} onColors={onColors} setOnColors={setOnColors} />
-                          ))
-                        }
-                      </Box>
-                    </AccordionDetails>
-                  </Accordion>
-                </li>
-                <li class="nav-item condition">
-                  <Accordion
-                    defaultExpanded
-                    sx={{
-                      backgroundColor: "#fbf5e6",
-                      borderRadius: "6px",
-                      maxWidth: "240px"
-                    }}
-                  >
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1-content"
-                      id="panel1-header"
-                    >
-                      <div class="condition-name">
-                        価格
-                      </div>
-                    </AccordionSummary>
-                    <AccordionDetails >
-                      <Box className="condition-item">
-                        {
-                          priceRanges.map((priceRange) => (
-                            <PriceCard priceRange={priceRange} onPriceRanges={onPriceRanges} setOnPriceRanges={setOnPriceRanges} />
-                          ))
-                        }
-                      </Box>
-                    </AccordionDetails>
-                  </Accordion>
-                </li>
-
-              </ul>
-            </nav> */}

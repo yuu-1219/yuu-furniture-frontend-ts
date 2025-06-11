@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -12,22 +12,24 @@ import RunButton from '../components/RunButton';
 import EmailForm from "../components/EmailForm";
 import PasswordForm from "../components/PasswordForm";
 
-// import { useAuth } from '../contexts/AuthContext';
-import { useUser } from "../contexts/UserContext";
-import { useCart } from '../contexts/CartContext';
+import { type UserContextType, useUser } from "../contexts/UserContext";
+import { type CartContextType, useCart } from '../contexts/CartContext';
+
+import { type UserType } from "../types/UserType";
+
 
 
 
 export default function Login() {
-  const { id } = useParams();
+  // const { id } = useParams();
 
-  const { user, login, isAuthenticated } = useUser();
-  const { cart, getCart } = useCart();
+  const { login } = useUser() as UserContextType;
+  const { getCart } = useCart() as CartContextType;
 
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
 
   const onClickRegister = () => {
@@ -35,7 +37,12 @@ export default function Login() {
   };
 
   const onClickLogin = async () => {
-    const loginUser = await login(email, password);
+    const loginUser: UserType | null = await login(email, password);
+    if (!loginUser || !loginUser._id) {
+      alert("ログインに失敗しました");
+      return;
+    }
+
     await getCart(loginUser._id);
     navigate("/");
   };
@@ -73,13 +80,8 @@ export default function Login() {
             }}
           >
 
-            {/* <h1 class="title">
-              ログイン
-            </h1> */}
-
             <Typography
               sx={{
-                // fontSize: "50px",
                 fontSize: {
                   xs: "28px",
                   sm: "36px",
@@ -87,7 +89,6 @@ export default function Login() {
                   lg: "50px",
                 },
                 fontWeight: "600",
-                // padding: "0px 50px",
                 padding: {
                   xs: "0px 30px",
                   sm: "0px 40px",
@@ -117,7 +118,6 @@ export default function Login() {
                 sx={{
                   width: "100%",
                   maxWidth: "850px",
-                  // padding: "20px 20px",
                   padding: "20px 20px 0px 20px",
                   display: "flex",
                   flexDirection: "column",
@@ -130,13 +130,6 @@ export default function Login() {
                 }}
               >
 
-                {/* <Box
-                  sx={{
-                    margin: "0px 0px 10px 0px",
-                  }}
-                >
-                  <h3>登録済みのお客様</h3>
-                </Box> */}
 
                 <Typography
                   sx={{
@@ -178,7 +171,7 @@ export default function Login() {
                     width: "60%"
                   }}
                 >
-                  <RunButton text={"ログインする"} width={450} handleClick={onClickLogin} />
+                  <RunButton text={"ログインする"} handleClick={onClickLogin} />
                 </Box>
               </Box>
               {/* (end)ログインBox */}
@@ -217,8 +210,6 @@ export default function Login() {
                 </Typography>
 
                 <Box
-                  // component={Link}
-                  // to="/register"
                   sx={{
                     display: "flex",
                     justifyContent: "center",
@@ -228,7 +219,7 @@ export default function Login() {
                     color: "inherit",
                   }}
                 >
-                  <RunButton text={"会員登録する"} width={450} handleClick={onClickRegister} />
+                  <RunButton text={"会員登録する"}  handleClick={onClickRegister} />
                 </Box>
               </Box>
               {/* (end)会員登録Box */}

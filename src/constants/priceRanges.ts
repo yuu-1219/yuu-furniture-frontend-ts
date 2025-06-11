@@ -1,3 +1,9 @@
+export interface PriceRangeType {
+    priceRangeId: string;
+    minPrice: number;
+    maxPrice: number;
+}
+
 export const priceRanges = [
     { priceRangeId: "1", minPrice: 0, maxPrice: 4999 },
     { priceRangeId: "2", minPrice: 5000, maxPrice: 9999 },

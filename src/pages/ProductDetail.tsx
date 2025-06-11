@@ -1,7 +1,7 @@
 import '../styles/ProductDetail.css'
 
 import { useState } from "react";
-import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -9,7 +9,6 @@ import Typography from '@mui/material/Typography';
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 
-import PaginationButton from "../components/PagingButton";
 import BackButton from "../components/BackButton";
 import Price from '../components/Price';
 import Review from '../components/Review';
@@ -17,55 +16,44 @@ import RunButton from '../components/RunButton';
 import QtyButton from '../components/QtyButton';
 import FavoriteButton from '../components/FavoriteButton';
 
-import Products from './Products';
-
-import { products } from "../constants/products";
-
-import { useCart } from '../contexts/CartContext';
-// import { useAuth } from '../contexts/AuthContext';
-import { useUser } from '../contexts/UserContext';
+import { type UserContextType, useUser } from "../contexts/UserContext";
+import { type CartContextType, useCart } from '../contexts/CartContext';
 
 
 export default function ProductDetail() {
-  const { id } = useParams();
+  // const { id } = useParams();
 
-  // const { isAuthenticated } = useAuth();
-  const { user, isAuthenticated } = useUser();
-  const { addToCart } = useCart();
-  const navigate = useNavigate();
+  const { user } = useUser() as UserContextType;
+  const { addToCart } = useCart() as CartContextType;
+  // const navigate = useNavigate();
 
-  const [qty, setQty] = useState(1);
+  let userId = null;
+
+  if(user && user._id){
+    userId = user._id;
+  }
+
+  const [qty, setQty] = useState<number>(1);
 
   const onIncrement = () => setQty((prev) => prev + 1);
   const onDecrement = () => setQty((prev) => Math.max(1, prev - 1)); // 
 
   const location = useLocation();
   const product = location.state?.product;
-  // const products = location.state?.products;
 
   const { _id, name, price, img, description, color, rating } = product;
 
   const handleAddToCart = async () => {
-    // if (!isAuthenticated) {
-    //   navigate("/login");
-    //   return;
-    // }
-
     await addToCart(_id, color, qty, price);
-
     alert("カートに追加されました");
   };
 
   return (
     <>
       <Header />
-
-      {/* <div class="background-overlay">*/}
-
       {/* (start)背景画像表示領域 */}
       <Box className="background-overlay">
 
-        {/* <div class="container-fluid contents"> */}
 
         {/* (start)タイトル~メインパーツ表示領域 */}
         <Box
@@ -80,7 +68,6 @@ export default function ProductDetail() {
 
           {/* (start)タイトル~メインパーツ表示レイアウト */}
           <Box
-            // className="row justify-content-center"
             sx={{
               display: "flex",
               flexWrap: "wrap",
@@ -99,13 +86,11 @@ export default function ProductDetail() {
           >
 
             {/* (start)左パーツ */}
-            {/* <nav class="nav-ver side-ver col-12 col-md-8 px-2 py-3 my-4"> */}
             <Box
               sx={{
                 margin: "10px 20px",
                 width: { xs: "90%", md: "35%" },
                 padding: "30px 30px",
-                // maxWidth: "650px",
                 backgroundColor: "rgba(251, 245, 230, 0.8)",
                 borderRadius: "10px",
                 border: "0.2px solid #eee9d3",
@@ -120,7 +105,6 @@ export default function ProductDetail() {
                 alt={name}
                 style={{
                   width: "100%",
-                  // maxWidth: "550px",
                   height: "auto",
                   objectFit: "cover",
                   aspectRatio: "4 / 3"
@@ -129,7 +113,6 @@ export default function ProductDetail() {
 
               <Typography
                 sx={{
-                  fontSize: "18px",
                   fontSize: {
                     xs: "14px",
                     sm: "16px",
@@ -151,13 +134,11 @@ export default function ProductDetail() {
 
             </Box>
 
-            {/* </nav> */}
             {/* (end)左パーツ */}
 
 
 
             {/* (start)右パーツ */}
-            {/* <div class="title-card col-12 col-md-9 py-3 my-4"> */}
             <Box
               sx={{
                 margin: "10px 20px",
@@ -192,9 +173,6 @@ export default function ProductDetail() {
                       alignItems: "flex-start"
                     }}
                   >
-                    {/* <h1 class="title">
-                      {name}
-                    </h1> */}
 
                     <Typography
                       sx={{
@@ -205,11 +183,6 @@ export default function ProductDetail() {
                           lg: "40px",
                         },
                         fontWeight: "600",
-                        // padding: {
-                        //   xs: "0px 10px",
-                        //   sm: "0px 15px",
-                        //   md: "0px 20px",
-                        // },
                         textAlign: "left"
                       }}>
                       {name}
@@ -220,7 +193,7 @@ export default function ProductDetail() {
                         padding: "0px 0px 0px 5px"
                       }}
                     >
-                      <Price price={price} priceSize={26} unitSize={16} priceWidth={72} />
+                      <Price price={price} />
                     </Box>
 
                     <Box
@@ -239,21 +212,15 @@ export default function ProductDetail() {
                     }}
                   >
                     {user && (
-                      <FavoriteButton userId={user._id} productId={_id} color={color} />
+                      <FavoriteButton userId={userId} productId={_id} color={color} />
                     )}
                   </Box>
-
-
 
                   {/* (end)商品名、価格、評価 */}
 
 
 
                 </Box>
-
-
-
-
 
                 {/* (start)商品説明*/}
                 <Box
@@ -384,7 +351,7 @@ export default function ProductDetail() {
 
                     }}
                   >
-                    <QtyButton qty={qty} width={150} onIncrement={onIncrement} onDecrement={onDecrement} />
+                    <QtyButton qty={qty} onIncrement={onIncrement} onDecrement={onDecrement} />
                   </Box>
 
                   <Box
@@ -395,7 +362,7 @@ export default function ProductDetail() {
                       width: "65%"
                     }}
                   >
-                    <RunButton text={"カートに入れる"} width={450} height={45} handleClick={handleAddToCart} />
+                    <RunButton text={"カートに入れる"}  handleClick={handleAddToCart} />
                   </Box>
 
 
@@ -411,7 +378,6 @@ export default function ProductDetail() {
           </Box>
           {/* (start)タイトル~メインパーツ表示レイアウト */}
 
-          {/* </div> */}
 
         </Box>
         {/* (end)タイトル~メインパーツ表示領域 */}
@@ -424,7 +390,6 @@ export default function ProductDetail() {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            // height: "100vh"   
           }}
         >
 
@@ -440,7 +405,6 @@ export default function ProductDetail() {
 
         </Box>
 
-        {/* </div > */}
       </Box>
       {/* (end)背景画像表示領域 */}
 

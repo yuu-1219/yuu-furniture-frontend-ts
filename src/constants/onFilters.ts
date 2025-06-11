@@ -1,3 +1,8 @@
+export interface onFilterType {
+    onFiltersId: string;
+    label: string;
+}
+
 export const onFilters = [
     // { onFiltersId: "1", label: "デフォルト" },
     { onFiltersId: "2", label: "価格の安い順" },

@@ -1,6 +1,3 @@
-// import React, { useState } from 'react';
-// import { Link } from "react-router-dom";
-
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -8,37 +5,21 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Price from "./Price";
 import QtyButton from './QtyButton';
 
-// import { products } from "../constants/products";
+import { type CartContextType, useCart } from "../contexts/CartContext";
+import { type ProductType } from "../types/ProductType";
 
-import { useCart } from "../contexts/CartContext";
-import { useUser } from "../contexts/UserContext";
+interface CartItemProps {
+    product: ProductType;
+    productId: string;
+    color: string;
+    qty: number;
+}
 
 
-export default function CartItem({ product, productId, color, qty }) {
-    // const fetchProductsUrl = "http://localhost:3000/products";
+export default function CartItem({ product, productId, color, qty }: CartItemProps) {
+    const { removeFromCart, incrementItem, decrementItem } = useCart() as CartContextType;
 
-    // const [product, setProduct] = useState([]);
-
-    const { user } = useUser();
-    const { cart, removeFromCart, incrementItem, decrementItem, clearCart } = useCart();
-
-    // const product = products.find(c => c._id === productId);
     const { name, price, img } = product;
-
-    // const cartItem = cart.items.find(c => c.productId === productId && c.color === color);
-    // const qty = cartItem.quantity;
-
-
-    // useEffect(() => {
-    //     fetchProduct();
-    // }, [productId]);
-
-    // async function fetchProduct() {
-    //     const productResult = await axios.get(`${fetchProductsUrl}/${productId}`);
-    //     console.log(productResult);
-    //     setProduct(productResult.data);
-    // }
-
 
     const onIncrement = () => {
         incrementItem(productId, color, price);
@@ -53,20 +34,14 @@ export default function CartItem({ product, productId, color, qty }) {
     }
 
 
-
     return (
         <Box
             sx={{
-
                 width: "100%",
                 minWidth: "300px",
-                // maxWidth: "800px",
                 minHeight: "200px",
                 padding: "20px",
                 margin: "0px 0px 20px 0px",
-                // backgroundColor: "rgba(251, 245, 230, 0.8)",
-                // borderRadius: "6px",
-                // border: "0.2px solid #eee9d3",
                 textDecoration: "none",
                 color: "inherit",
                 display: "flex",
@@ -102,9 +77,7 @@ export default function CartItem({ product, productId, color, qty }) {
                         alt={name}
                         style={{
                             width: "40%",
-                            // maxWidth: "250px",
                             height: "auto",
-                            // maxHeight: "150px",
                             objectFit: "cover",
                             aspectRatio: "4 / 3"
                         }}
@@ -124,7 +97,6 @@ export default function CartItem({ product, productId, color, qty }) {
                         {/* 商品タイトル */}
                         <Typography
                             sx={{
-                                // fontSize: "18px",
                                 fontSize: {
                                     xs: "14px",
                                     sm: "16px",
@@ -175,7 +147,7 @@ export default function CartItem({ product, productId, color, qty }) {
                             }}
                         >
 
-                            <Price price={price} priceWidth={43} priceSize={20} unitSize={14} />
+                            <Price price={price} />
                         </Box>
 
 
@@ -195,18 +167,16 @@ export default function CartItem({ product, productId, color, qty }) {
                         justifyContent: "space-between",
                         margin: "20px 0px 0px 0px",
                         padding: "10px 50px 0px 30px",
-                        // gap: 0.5
                     }}
                 >
 
                     {/* 数量ボタン */}
                     <Box
                         sx={{
-                            // width: "10%",
-                            width: { 
-                                xs: "60%", 
-                                sm: "45%", 
-                                md: "30%" 
+                            width: {
+                                xs: "60%",
+                                sm: "45%",
+                                md: "30%"
                             },
                         }}
                     >
@@ -216,16 +186,14 @@ export default function CartItem({ product, productId, color, qty }) {
 
 
 
-                     {/* (start) 小計 */}
+                    {/* (start) 小計 */}
                     <Box
                         sx={{
-                            // width: "40%",
                             width: {
                                 xs: "80%",
                                 sm: "50%",
                                 md: "55%",
                             },
-                            // maxwidth: "20px",
                             display: "flex",
                             alignItems: "baseline",
                             justifyContent: "center",
@@ -234,14 +202,12 @@ export default function CartItem({ product, productId, color, qty }) {
                     >
                         <Typography
                             sx={{
-                                // width: "20%",
                                 width: {
                                     xs: "20%",
                                     sm: "30%",
                                     md: "30%",
                                 },
                                 fontWeight: "200",
-                                // fontSize: "16px",
                                 fontSize: {
                                     xs: "12px",
                                     sm: "14px",
@@ -257,7 +223,6 @@ export default function CartItem({ product, productId, color, qty }) {
 
                         <Box
                             sx={{
-                                // width: "70%",
                                 width: {
                                     xs: "70%",
                                     sm: "70%",
@@ -268,7 +233,7 @@ export default function CartItem({ product, productId, color, qty }) {
                             }}
                         >
 
-                            <Price price={price * qty} priceWidth={60} priceSize={24} unitSize={16} />
+                            <Price price={price * qty} />
                         </Box>
                     </Box>
                     {/* (end) 小計 */}
@@ -277,7 +242,6 @@ export default function CartItem({ product, productId, color, qty }) {
                     {/* 削除ボタン */}
                     <Box
                         sx={{
-                            width: "10%",
                             width: {
                                 xs: "1%",
                                 sm: "1%",
@@ -288,15 +252,9 @@ export default function CartItem({ product, productId, color, qty }) {
                         }}
                         onClick={onDelete}
                     >
-                        <DeleteForeverIcon 
-                        sx = {{
-                            // fontSize: {
-                            //     xs: "20",
-                            //     sm: "28",
-                            //     md: "32",
-                            //     lg: "36"
-                            // }
-                        }}/>
+                        <DeleteForeverIcon
+                            sx={{
+                            }} />
 
                     </Box>
 

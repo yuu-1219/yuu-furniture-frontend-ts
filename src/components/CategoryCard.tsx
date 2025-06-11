@@ -2,20 +2,12 @@ import { Link } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemText from '@mui/material/ListItemText';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import Divider from '@mui/material/Divider';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
-// import { FaBoxes, FaCouch } from "react-icons/fa";
-// import { MdHotel, MdKingBed, MdLightbulbOutline, MdKitchen, MdDesk } from "react-icons/md";
-// import { GiBasket, GiKnifeFork, GiShower, GiRolledCloth, GiTable, GiFlowerPot } from "react-icons/gi";
+import { type IconType } from "react-icons";
 import { BiCategory } from "react-icons/bi";
 
-import { categories } from '../constants/categories';
+import { type CategoryType, categories } from '../constants/categories';
 
 
 export default function CategoryCard() {
@@ -30,12 +22,10 @@ export default function CategoryCard() {
                     height: "100%",
                     padding: "20px 20px",
                     margin: "0px 0px",
-                    // maxWidth: "800px",
                     backgroundColor: "rgba(251, 245, 230, 0.8)",
                     borderRadius: "10px",
                     border: "0.2px solid #eee9d3",
                     display: "flex",
-                    // flexDirection: "column",
                     flexDirection: {
                         xs: "column",
                         md: "column",
@@ -68,9 +58,7 @@ export default function CategoryCard() {
                     sx={{
                         margin: "10px 0px 10px 0px",
                         width: { xs: "100%", md: "95%" },
-                        // width: "100%",
                         height: "100%",
-                        // minWidth: "300px",
                         display: "flex",
                         flexWrap: "wrap",
                         flexDirection: {
@@ -103,10 +91,6 @@ export default function CategoryCard() {
                                 md: "40%",
                                 lg: "10%"
                             },
-                            // maxWidth: "260px",
-                            // minWidth: "140px",
-                            // maxHeight: "200px",
-                            // minHeight: "160px",
                             padding: {
                                 xs: "12px 0px",
                                 sm: "16px 0px",
@@ -129,7 +113,6 @@ export default function CategoryCard() {
                                 width: "100%",
                                 height: "100%",
                                 display: "flex",
-                                flexDirection: "column",
                                 flexDirection: {
                                     xs: "column",
                                     md: "row",
@@ -188,8 +171,8 @@ export default function CategoryCard() {
 
 
                     {/* (start)各カテゴリー */}
-                    {categories.map((category) => {
-                        const IconComponent = category.icon;
+                    {categories.map((category: CategoryType) => {
+                        const IconComponent: IconType = category.icon;
                         return (
                             <Box
                                 component={Link}
@@ -207,18 +190,11 @@ export default function CategoryCard() {
                                         md: "40%",
                                         lg: "10%"
                                     },
-                                    // height: "100%",
-                                    // maxWidth: "260px",
-                                    // minWidth: "140px",
-                                    // maxHeight: "200px",
-                                    // minHeight: "160px",
-                                    // padding: "20px 0px",
                                     padding: {
                                         xs: "12px 0px",
                                         sm: "16px 0px",
                                         md: "8px 0px",
                                     },
-                                    // margin: "20px",
                                     margin: {
                                         xs: "2px 3px" ,
                                         sm: "5px 3px",
@@ -236,7 +212,6 @@ export default function CategoryCard() {
                                         width: "100%",
                                         height: "100%",
                                         display: "flex",
-                                        // flexDirection: "column",
                                         flexDirection: {
                                             xs: "column",
                                             md: "row",
@@ -273,7 +248,6 @@ export default function CategoryCard() {
                                         <Typography
                                             sx={{
                                                 padding: "0px 0px 0px 10px",
-                                                fontSize: "18px",
                                                 fontSize: {
                                                     xs: "12px",
                                                     sm: "14px",
@@ -300,7 +274,6 @@ export default function CategoryCard() {
                 </Box>
                 {/* (end)メニュー一覧 */}
 
-                {/* </Box> */}
                 {/* カテゴリーリスト */}
 
             </Box>

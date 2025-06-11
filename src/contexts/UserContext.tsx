@@ -1,45 +1,73 @@
 import axios from "axios";
-
 import { createContext, useState, useContext } from "react";
+import { type PropsWithChildren, type Dispatch, type SetStateAction } from 'react';
 
-const UserUrl = `${import.meta.env.VITE_API_BASE_URL}/user`;
+import { type UserType } from '../types/UserType';
+import { type OrderType } from '../types/OrderType';
+import { type FavoriteType } from '../types/FavoriteType';
+import { type CartType, type CartItemType } from '../types/CartType';
 
-const UserContext = createContext();
+const UserUrl: string = `${import.meta.env.VITE_API_BASE_URL}/user`;
+
+export interface UserContextType {
+  isAuthenticated: boolean;
+  user: UserType | null;
+  setUser: Dispatch<SetStateAction<UserType | null>>;
+  register: (userInfo: UserType, password: string) => Promise<UserType>;
+  login: (email: string, password: string) => Promise<UserType | null>;
+  logout: () => void;
+  changeUserInfo: (userId: string, name: string, email: string) => Promise<UserType | null>;
+  changeUserPassword: (userId: string, newPassword: string) => Promise<UserType | null>;
+  deleteUserInfo: (userId: string) => Promise<void>;
+  handlePurchase: (cart: CartType) => Promise<{ orderId: string, purchasedAt: string } | null>;
+  addFavorite: (userId: string, productId: string, color: string) => Promise<UserType | null>;
+  removeFavorite: (userId: string, productId: string, color: string) => Promise<UserType | null>;
+  toggleFavorite: (userId: string | null, productId: string, color: string) => Promise<UserType | null>;
+}
+
+const UserContext = createContext<UserContextType | null>(null);
 
 
-export function UserProvider({ children }) {
+export function UserProvider({ children }: PropsWithChildren) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserType | null>(null);
 
-  const register = async (userInfo, password) => {
+
+  const register = async (userInfo: UserType, password: string) => {
     const res = await axios.post(UserUrl, { userInfo, password });
     const { email } = res.data;
 
     try {
       await login(email, password);
-    } catch (e) {
-      const message = e.response?.data?.message || "会員登録中にエラーが発生しました";
-      alert(message); 
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "会員登録中にエラーが発生しました";
+        alert(message);
+      }
     }
 
     return res.data;
   };
 
-  const login = async (email, password) => {
+  const login = async (email: string, password: string) => {
     try {
       const res = await axios.post(`${UserUrl}/login`, { email, password });
       setUser(res.data);
       setIsAuthenticated(true);
       return res.data
-    } catch (e) {
-      const message = e.response?.data?.message || "ログイン中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "ログイン中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
 
   };
 
   const logout = () => {
     setUser({
+      // _id: null,
       name: null,
       email: null,
       orders: [],
@@ -48,72 +76,82 @@ export function UserProvider({ children }) {
     setIsAuthenticated(false);
   };
 
-  const changeUserInfo = async (userId, name, email) => {
-    const updatedUser = {
+  const changeUserInfo = async (userId: string, name: string, email: string) => {
+    if (!user) return;
+    const updatedUser: UserType = {
       ...user,
       name: name,
       email: email,
     };
 
-    // setUser(updatedUser);
 
     if (!userId) return null;
 
     try {
       const isPurchase = 0;
-      const res = await axios.put(`${UserUrl}/${userId}`, {updatedUser, isPurchase});
+      const res = await axios.put(`${UserUrl}/${userId}`, { updatedUser, isPurchase });
       setUser(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "会員情報の変更中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "会員情報の変更中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
 
-  const changeUserPassword = async (userId, newPassword) => {
+  const changeUserPassword = async (userId: string, newPassword: string) => {
     if (!userId) return null;
 
     try {
       const res = await axios.put(`${UserUrl}/${userId}/password`, { password: newPassword });
       setUser(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "パスワードの変更中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "パスワードの変更中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
 
-  const deleteUserInfo = async () => {
+  const deleteUserInfo = async (userId: string) => {
     setUser({
+      // _id: null,
       name: null,
       email: null,
-      password: null,
       orders: [],
       favorites: []
     });
     setIsAuthenticated(false);
 
     try {
-      const res = await axios.delete(`${UserUrl}/${user._id}`);
+      const res = await axios.delete(`${UserUrl}/${userId}`);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "アカウント情報の削除中にエラーが発生しました";
-      alert(message);
-
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "アカウント情報の削除中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
   }
 
 
-  const handlePurchase = async (cart) => {
-    if (!user) return null;
-
+  const handlePurchase = async (cart: CartType) => {
+    // console.log("OK!");
     const orderId = generateOrderId()
 
-    const newOrder = {
+    const newOrder: OrderType = {
+      // _id: null,
       orderId: orderId,
-      items: cart.items.map(item => ({
+      items: cart.items.map((item: CartItemType) => ({
         productId: item.productId,
         quantity: item.quantity,
         color: item.color,
@@ -123,24 +161,29 @@ export function UserProvider({ children }) {
       purchasedAt: new Date().toISOString(),
     };
 
+    if (!user) return null;
 
-    const updatedUser = {
+    const updatedUser: UserType = {
       ...user,
       orders: [newOrder, ...(user.orders || [])],
     };
 
-    // setUser(updatedUser);
 
     try {
       const isPurchase = 1;
-      const res = await axios.put(`${UserUrl}/${user._id}`, {updatedUser, isPurchase, orderId})
+      const res = await axios.put(`${UserUrl}/${user._id}`, { updatedUser, isPurchase, orderId })
       setUser(res.data);
       return { orderId: newOrder.orderId, purchasedAt: newOrder.purchasedAt };
-    } catch (e) {
-      const message = e.response?.data?.message || "購入処理中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "購入処理中にエラーが発生しました";
+        alert(message);
+      }
     }
+
+    return null;
   };
+
 
   const generateOrderId = () => {
     const now = new Date();
@@ -149,89 +192,93 @@ export function UserProvider({ children }) {
 
     const random = Math.random().toString(36).slice(-6).toUpperCase();
     return `${yyyymmdd}-${hhmm}-${random}`;
-    // return `${yyyymmdd}-${hhmm}`;
   };
 
 
 
-  const addFavorite = async (userId, productId, color) => {
-    const updatedUser = {
+  const addFavorite = async (userId: string, productId: string, color: string) => {
+    if (!user) return null;
+
+    const updatedUser: UserType = {
       ...user,
       favorites: [...(user.favorites || []), { productId, color }],
     };
 
-    // setUser(updatedUser);
 
     if (!userId) return null;
 
     try {
       const isPurchase = 0;
-      const res = await axios.put(`${UserUrl}/${userId}`, {updatedUser, isPurchase});
+      const res = await axios.put(`${UserUrl}/${userId}`, { updatedUser, isPurchase });
       setUser(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "お気に入り登録中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "お気に入り登録中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
 
-  const removeFavorite = async (userId, productId, color) => {
-    const updatedUser = {
+  const removeFavorite = async (userId: string, productId: string, color: string) => {
+    if (!user) return null;
+
+    const updatedUser: UserType = {
       ...user,
       favorites: user.favorites.filter(c => !(c.productId === productId && c.color === color))
     };
 
-    // setUser(updatedUser);
 
     if (!userId) return null;
 
     try {
       const isPurchase = 0;
-      const res = await axios.put(`${UserUrl}/${userId}`, {updatedUser, isPurchase});
+      const res = await axios.put(`${UserUrl}/${userId}`, { updatedUser, isPurchase });
       setUser(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "お気に入り商品の削除中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "お気に入り商品の削除中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
+
   };
 
 
-  const toggleFavorite = async (userId, productId, color) => {
-    // setUser((prevUser) => {
-    //   const favorites = prevUser.favorites || [];
-    //   const isAlready = favorites.some(c => c.productId === productId && c.color === color);
-    //   return {
-    //     ...prevUser,
-    //     favorites: isAlready
-    //       ? favorites.filter(c => !(c.productId === productId && c.color === color))
-    //       : [...(favorites || []), { productId, color }]
-    //   };
-    // });
+  const toggleFavorite = async (userId: string | null, productId: string, color: string) => {
+    if (!user || !userId) {
+      alert("お気に入りリストへの登録にはログインが必要です");
+      return null;
+    }
 
-    const favorites = user.favorites || [];
+    const favorites: FavoriteType[] = user.favorites || [];
     const isAlready = favorites.some(c => c.productId === productId && c.color === color);
-    const updatedUser = {
+    const updatedUser: UserType = {
       ...user,
       favorites: isAlready
         ? favorites.filter(c => !(c.productId === productId && c.color === color))
         : [...(favorites || []), { productId, color }]
     };
 
-    // setUser(updatedUser);
-
     if (!userId) return null;
 
     try {
       const isPurchase = 0;
-      const res = await axios.put(`${UserUrl}/${userId}`, {updatedUser, isPurchase});
+      const res = await axios.put(`${UserUrl}/${userId}`, { updatedUser, isPurchase });
       setUser(res.data);
       return res.data;
-    } catch (e) {
-      const message = e.response?.data?.message || "お気に入りリストの操作中にエラーが発生しました";
-      alert(message);
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        const message = e.response?.data?.message || "お気に入りリストの操作中にエラーが発生しました";
+        alert(message);
+      }
     }
+    return null;
 
   };
 

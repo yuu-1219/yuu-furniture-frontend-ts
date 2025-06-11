@@ -1,9 +1,11 @@
 import api from './index';
 
-export const createOrder = (orderData) => {
+import { type OrderType } from "../types/OrderType";
+
+export const createOrder = (orderData: OrderType ) => {
   return api.post('/orders', orderData);
 };
 
-export const fetchOrderHistory = (userId) => {
+export const fetchOrderHistory = (userId: string) => {
   return api.get('/orders', { params: { userId } });
 };

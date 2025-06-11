@@ -9,7 +9,6 @@ interface BackButtonProps {
   link: string;
 }
 
-
 export default function BackButton({ text, link } : BackButtonProps) {
   return (
     <Link

@@ -1,12 +1,17 @@
-import { useState } from "react";
+import { type Dispatch, type SetStateAction, type ChangeEvent} from 'react';
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import TextField from "@mui/material/TextField"
 
-export default function NameForm({ name, setName }) {
-    // const [name, setName] = useState("");
-    const UpdateName = (e) => {
+
+interface NameFormProps {
+    name: string;
+    setName: Dispatch<SetStateAction<string>>;
+}
+
+export default function NameForm({ name, setName } : NameFormProps) {
+    const UpdateName = (e: ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value);
     }
 
@@ -20,15 +25,11 @@ export default function NameForm({ name, setName }) {
                 },
                 alignItems: "center",
                 justifyContent: "center",
-                // flexWrap: "wrap",  
-                // gap: "30px",
                 margin: "0px",
-                // maxWidth: "600px",     
                 width: "100%"
             }}
         >
             <Typography
-                HTMLFor="name"
                 component="label"
                 sx={{
                     fontSize: {
@@ -38,7 +39,6 @@ export default function NameForm({ name, setName }) {
                         lg: "18px"
                     },
                     fontWeight: "600",
-                    // width: "20%",
                     width: {
                         xs: "100%",
                         sm: "30%",
@@ -58,9 +58,6 @@ export default function NameForm({ name, setName }) {
                 value={name}
                 onChange={UpdateName}
                 sx={{
-                    // height: "35px",
-                    // width : "450px",
-                    // width: "80%",
                     width: {
                         xs: "100%",
                         sm: "70%",
@@ -78,7 +75,6 @@ export default function NameForm({ name, setName }) {
                     }
                 }}
             />
-
 
         </Box>
 

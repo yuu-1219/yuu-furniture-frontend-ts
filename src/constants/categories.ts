@@ -1,9 +1,17 @@
-import { FaBoxes, FaCouch } from "react-icons/fa";
-import { MdHotel, MdKingBed, MdLightbulbOutline, MdKitchen, MdDesk } from "react-icons/md";
-import { GiBasket, GiKnifeFork, GiShower, GiRolledCloth, GiTable, GiFlowerPot } from "react-icons/gi";
+import { type IconType } from "react-icons";
 
-export const categories = [
-  // { categoryId: "all_furniture", categoryLabel: "全ての商品" },
+import { FaBoxes, FaCouch } from "react-icons/fa";
+import { MdHotel, MdKingBed, MdLightbulbOutline, MdDesk } from "react-icons/md";
+import { GiBasket, GiRolledCloth, GiTable, GiFlowerPot } from "react-icons/gi";
+
+export interface CategoryType {
+  categoryId: string;
+  categoryLabel: string;
+  icon: IconType;
+  description: string
+}
+
+export const categories: CategoryType[] = [
   {
     categoryId: "storage_furniture", categoryLabel: "収納家具", icon: FaBoxes,
     description: "さまざまなスペースで有効活用できる収納アイテムが揃っています。大切なアルバムや工具まで、整理整頓が簡単に。限られたスペースを最大限に活用することで、ライフスタイルにもっと楽しみが広がります。"

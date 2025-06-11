@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { Link, useParams, useNavigate } from "react-router-dom";
-import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,20 +13,23 @@ import EmailForm from "../components/EmailForm";
 import PasswordForm from "../components/PasswordForm";
 import NameForm from "../components/NameForm";
 
-// import { useAuth } from '../contexts/AuthContext';
-import { useUser } from "../contexts/UserContext";
-import { useCart } from '../contexts/CartContext';
+import { type UserContextType, useUser } from "../contexts/UserContext";
+import { type CartContextType, useCart } from '../contexts/CartContext';
+
+import { type UserType } from "../types/UserType";
+import { type CartType } from "../types/CartType";
+
 
 
 export default function Register() {
-  const { register } = useUser();
-  const { cart, registerCart } = useCart();
+  const { register } = useUser() as UserContextType;
+  const { cart, registerCart } = useCart() as CartContextType;
 
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   const handleRegister = async () => {
     if (password.length <= 4) {
@@ -35,19 +37,19 @@ export default function Register() {
       setPassword("");
       return;
     }
-    const newUser = {
+    const newUser: UserType = {
+      // _id: null,
       name,
       email,
-      // password,
       orders: [],
       favorites: []
     };
     const registeredUser = await register(newUser, password);
 
     // カート情報を作成
-    const newCart = {
+    const newCart: CartType = {
       ...cart,
-      userId: registeredUser._id,
+      userId: registeredUser._id as string,
       updatedAt: new Date().toISOString()
     };
     await registerCart(newCart);
@@ -86,14 +88,8 @@ export default function Register() {
             }}
           >
 
-
-            {/* <h1 class="title">
-              会員登録
-            </h1> */}
-
             <Typography
               sx={{
-                // fontSize: "50px",
                 fontSize: {
                   xs: "28px",
                   sm: "36px",
@@ -101,7 +97,6 @@ export default function Register() {
                   lg: "50px",
                 },
                 fontWeight: "600",
-                // padding: "0px 50px",
                 padding: {
                   xs: "0px 30px",
                   sm: "0px 40px",
@@ -178,20 +173,16 @@ export default function Register() {
                     width: "35%",
                   }}
                 >
-                  <RunButton text={"登録する"} width={450} handleClick={handleRegister} />
+                  <RunButton text={"登録する"} handleClick={handleRegister} />
                 </Box>
               </Box>
               {/* (end)ログインBox */}
 
-
-
             </Box>
             {/* (end)フォーム */}
 
-
           </Box>
           {/* (end)タイトル~メインパーツ表示レイアウト */}
-
 
         </Box>
         {/* (end)タイトル~メインパーツ表示領域 */}
@@ -206,7 +197,6 @@ export default function Register() {
             alignItems: "center",
           }}
         >
-
 
           <Box
             sx={{

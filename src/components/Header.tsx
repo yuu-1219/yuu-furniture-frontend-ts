@@ -1,5 +1,4 @@
-import * as React from 'react';
-import { useState } from "react";
+import { type MouseEvent, type KeyboardEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import { styled, alpha } from '@mui/material/styles';
@@ -14,23 +13,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import LoginIcon from '@mui/icons-material/Login';
-import MoreIcon from '@mui/icons-material/MoreVert';
 import MenuIcon from '@mui/icons-material/Menu';
 
-import { useCart } from "../contexts/CartContext";
-// import { useAuth } from '../contexts/AuthContext';
-import { useUser } from '../contexts/UserContext';
-
-// import Home from "../pages/Home";
-// import Cart from "../pages/Cart";
-// import UserInfo from "../pages/UserInfo";
-// import Favorite from "../pages/Favorite";
+import { type CartContextType, useCart } from "../contexts/CartContext";
+import { type UserContextType, useUser } from '../contexts/UserContext';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -70,7 +59,6 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
     padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
@@ -86,55 +74,58 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-export default function Header({ categoryId = null }) {
+interface HeaderProps {
+  categoryId?: string | null;
+}
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+export default function Header({ categoryId = null } : HeaderProps) {
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  // const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [_, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<HTMLElement | null>(null);
 
-  const handleProfileMenuOpen = (event) => {
+  // const isMenuOpen: boolean = Boolean(anchorEl);
+  const isMobileMenuOpen: boolean = Boolean(mobileMoreAnchorEl);
+
+  const handleProfileMenuOpen = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleMobileMenuClose = () => {
+  const handleMobileMenuClose = (): void => {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
+  // const handleMenuClose = (): void => {
+  //   setAnchorEl(null);
+  //   handleMobileMenuClose();
+  // };
 
-  const handleMobileMenuOpen = (event) => {
+  const handleMobileMenuOpen = (event: MouseEvent<HTMLElement>): void => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
   const navigate = useNavigate();
   const [searchWord, setSearchWord] = useState("");
 
-  const { cart } = useCart();
-  const { user, isAuthenticated } = useUser();
+  const { cart } = useCart() as CartContextType;
+  const { user, isAuthenticated } = useUser() as UserContextType;
 
-  const totalQty = cart && cart.totalQty ? cart.totalQty : 0;
+  const totalQty: number = cart && cart.totalQty ? cart.totalQty : 0;
 
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
-      // if (searchWord.trim() !== "") {
       if (categoryId !== null) {
         navigate(`/products?category=${categoryId}&search=${encodeURIComponent(searchWord.trim())}`);
       } else {
         navigate(`/products?search=${encodeURIComponent(searchWord.trim())}`);
       }
-      // } 
     }
   };
 
 
-  const menuId = 'primary-search-account-menu';
-  const mobileMenuId = 'primary-search-account-menu-mobile';
+  const menuId: string = 'primary-search-account-menu';
+  const mobileMenuId: string = 'primary-search-account-menu-mobile';
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
@@ -159,7 +150,7 @@ export default function Header({ categoryId = null }) {
             textDecoration: 'none',
             cursor: 'default',
             '&:hover': {
-              backgroundColor: 'transparent' // ホバー時の背景色を無効化
+              backgroundColor: 'transparent' 
             },
             display: "flex",
             justifyContent: "center"
@@ -229,7 +220,6 @@ export default function Header({ categoryId = null }) {
           color="inherit"
         >
           <Badge badgeContent={totalQty} color="error">
-            {/* <ShoppingCartCheckoutIcon /> */}
             <ShoppingCartIcon />
           </Badge>
         </IconButton>
@@ -257,7 +247,6 @@ export default function Header({ categoryId = null }) {
             color="inherit"
           >
             <AccountCircle />
-            {/* <PersonOutlineIcon/> */}
           </IconButton>
           <Typography>
             マイページ
@@ -325,22 +314,6 @@ export default function Header({ categoryId = null }) {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', sm: 'none', md: 'flex' }, alignItems: 'baseline' }}>
 
-            {/* <Typography
-              noWrap
-              component={Link}
-              to={"/login"}
-              sx={{
-                flexGrow: 1,
-                textAlign: 'right',
-                fontWeight: "700",
-                fontSize: "14px",
-                color: 'inherit',
-                textDecoration: 'none'
-              }}
-            >
-              {user ? `${user.name} さん` : "ログイン"}
-
-            </Typography> */}
 
             {user && isAuthenticated ? (
               <Typography
@@ -389,7 +362,6 @@ export default function Header({ categoryId = null }) {
             >
               <Badge badgeContent={totalQty} color="error">
                 <Link to="/cart" style={{ color: 'inherit', textDecoration: 'none' }}>
-                  {/* <ShoppingCartCheckoutIcon /> */}
                   <ShoppingCartIcon />
                 </Link>
               </Badge>
@@ -407,7 +379,6 @@ export default function Header({ categoryId = null }) {
               >
                 <Link to={`/user/${user._id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
                   <AccountCircle />
-                  {/* <PersonOutlineIcon/> */}
                 </Link>
               </IconButton>
             )}

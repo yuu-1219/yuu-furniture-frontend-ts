@@ -1,8 +1,14 @@
-import * as React from 'react';
+import { type ChangeEvent } from "react";
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
-export default function PaginationButton({ totalPages, currentPage, handlePageChange }) {
+interface PaginationButtonProps {
+  totalPages: number;
+  currentPage: number;
+  handlePageChange: (e: ChangeEvent<unknown>, value: number) => void;
+}
+
+export default function PaginationButton({ totalPages, currentPage, handlePageChange } : PaginationButtonProps) {
   return (
     <Stack spacing={2} alignItems="center">
       <Pagination 

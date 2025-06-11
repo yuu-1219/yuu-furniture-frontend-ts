@@ -5,7 +5,7 @@ const api = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true // 認証が必要な場合はtrueにする
+  withCredentials: true 
 });
 
 export default api;
