@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -14,11 +15,38 @@ interface ProductCardType {
 }
 
 export default function ProductCard({ product } : ProductCardType) {
+    const [searchParams] = useSearchParams();
+    const resultSearchWord: string = searchParams.get("search") || "";
+    const [searchWord, setSearchWord] = useState<string>(resultSearchWord);
+
+    const onCategoryId: string | null = searchParams.get("category");
+
+    useEffect(() => {
+        const newSearchWord = searchParams.get("search") || "";
+        setSearchWord(newSearchWord);
+      }, [searchParams]);
+
     const { _id, name, price, img, rating } = product;
+
+    let productUrl: string = `/products/${_id}`;
+
+    if(onCategoryId !== null) {
+        if((searchWord !== null) && (searchWord.trim() !== "")) {
+            productUrl = `${productUrl}?category=${onCategoryId}&search=${encodeURIComponent(searchWord)}`
+        } else {
+            productUrl = `${productUrl}?category=${onCategoryId}`;
+        }
+    } else {
+        if((searchWord !== null) && (searchWord.trim() !== "")) {
+            productUrl = `${productUrl}?search=${encodeURIComponent(searchWord)}`;
+        }
+    }
+
     return (
         <Box
             component={Link}
-            to={`/products/${_id}`}
+            // to={`/products/${_id}`}
+            to={productUrl}
             state={{ product }}
             sx={{
 

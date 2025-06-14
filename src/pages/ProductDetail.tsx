@@ -1,7 +1,7 @@
 import '../styles/ProductDetail.css'
 
 import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -21,15 +21,16 @@ import { type CartContextType, useCart } from '../contexts/CartContext';
 
 
 export default function ProductDetail() {
-  // const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const onCategoryId = searchParams.get("category");
+  const searchWord = searchParams.get("search");
 
   const { user } = useUser() as UserContextType;
   const { addToCart } = useCart() as CartContextType;
-  // const navigate = useNavigate();
 
   let userId = null;
 
-  if(user && user._id){
+  if (user && user._id) {
     userId = user._id;
   }
 
@@ -43,6 +44,20 @@ export default function ProductDetail() {
 
   const { _id, name, price, img, description, color, rating } = product;
 
+  let productUrl: string = `/products`;
+
+  if (onCategoryId !== null) {
+    if ((searchWord !== null) && (searchWord.trim() !== "")) {
+      productUrl = `${productUrl}?category=${onCategoryId}&search=${encodeURIComponent(searchWord)}`
+    } else {
+      productUrl = `${productUrl}?category=${onCategoryId}`;
+    }
+  } else {
+    if ((searchWord !== null) && (searchWord.trim() !== "")) {
+      productUrl = `${productUrl}?search=${encodeURIComponent(searchWord)}`;
+    }
+  }
+
   const handleAddToCart = async () => {
     await addToCart(_id, color, qty, price);
     alert("カートに追加されました");
@@ -50,7 +65,7 @@ export default function ProductDetail() {
 
   return (
     <>
-      <Header />
+      <Header categoryId={onCategoryId}/>
       {/* (start)背景画像表示領域 */}
       <Box className="background-overlay">
 
@@ -362,7 +377,7 @@ export default function ProductDetail() {
                       width: "65%"
                     }}
                   >
-                    <RunButton text={"カートに入れる"}  handleClick={handleAddToCart} />
+                    <RunButton text={"カートに入れる"} handleClick={handleAddToCart} />
                   </Box>
 
 
@@ -399,7 +414,10 @@ export default function ProductDetail() {
               margin: "30px 0px 0px 0px",
             }}
           >
-            <BackButton text="商品一覧を見る" link="/products" />
+            <BackButton
+              text="商品一覧を見る"
+              link={productUrl}
+            />
           </Box>
 
 

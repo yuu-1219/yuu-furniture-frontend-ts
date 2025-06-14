@@ -1,5 +1,5 @@
-import { type MouseEvent, type KeyboardEvent, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { type MouseEvent, type KeyboardEvent, useState, useEffect  } from "react";
+import { Link, useNavigate,  useSearchParams  } from "react-router-dom";
 
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -105,7 +105,10 @@ export default function Header({ categoryId = null } : HeaderProps) {
   };
 
   const navigate = useNavigate();
-  const [searchWord, setSearchWord] = useState("");
+
+  const [searchParams] = useSearchParams();
+  const resultSearchWord = searchParams.get("search") || "";
+  const [searchWord, setSearchWord] = useState(resultSearchWord);
 
   const { cart } = useCart() as CartContextType;
   const { user, isAuthenticated } = useUser() as UserContextType;
@@ -113,12 +116,31 @@ export default function Header({ categoryId = null } : HeaderProps) {
   const totalQty: number = cart && cart.totalQty ? cart.totalQty : 0;
 
 
+  useEffect(() => {
+    const newSearchWord: string = searchParams.get("search") || "";
+    setSearchWord(newSearchWord);
+  }, [searchParams]);
+
+
   const handleSearch = (e: KeyboardEvent<HTMLInputElement>): void => {
     if (e.key === "Enter") {
-      if (categoryId !== null) {
-        navigate(`/products?category=${categoryId}&search=${encodeURIComponent(searchWord.trim())}`);
+      let trimmedSearchedWord = "";
+      if (typeof searchWord === "string" && searchWord.trim() !== "") {
+        trimmedSearchedWord = searchWord.trim();
+      }
+
+      if ((trimmedSearchedWord !== "") && (trimmedSearchedWord !== null)) {
+        if (categoryId !== null ) {
+          navigate(`/products?category=${categoryId}&search=${encodeURIComponent(trimmedSearchedWord)}`);
+        } else {
+          navigate(`/products?search=${encodeURIComponent(trimmedSearchedWord)}`);
+        }
       } else {
-        navigate(`/products?search=${encodeURIComponent(searchWord.trim())}`);
+        if (categoryId !== null ) {
+          navigate(`/products?category=${categoryId}`);
+        } else {
+          navigate(`/products`);
+        }
       }
     }
   };

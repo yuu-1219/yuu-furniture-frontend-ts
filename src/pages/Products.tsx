@@ -39,7 +39,8 @@ export default function Products() {
   const onCategory: CategoryType = categories.find(c => c.categoryId === onCategoryId)!;
   // const queryString = onCategory ? `?category=${onCategoryId}` : "";
 
-  const searchWord = searchParams.get("search");
+  const resultSearchWord: string = searchParams.get("search") || "";
+  const [searchWord, setSearchWord] = useState<string>(resultSearchWord);
 
   useEffect(() => {
     fetchProducts();
@@ -48,6 +49,11 @@ export default function Products() {
   useEffect(() => {
     sortProducts(products);
   }, [onFilter]);
+
+  useEffect(() => {
+    const newSearchWord = searchParams.get("search") || "";
+    setSearchWord(newSearchWord);
+  }, [searchParams]);
 
   async function fetchProducts() {
     try {
