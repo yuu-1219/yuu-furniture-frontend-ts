@@ -43,7 +43,9 @@ export default function Home() {
   async function fetchTopProducts() {
     try {
       const resultProducts = await axios.post(`${ProductsUrl}/ranking`);
-      setTopProducts(resultProducts.data);
+      if (JSON.stringify(resultProducts.data) !== JSON.stringify(topProducts)) {
+        setTopProducts(resultProducts.data);
+      }
     } catch (e: unknown) {
       if (axios.isAxiosError(e)) {
         const message = e.response?.data?.message || "商品データの取得中にエラーが発生しました";
@@ -248,7 +250,7 @@ export default function Home() {
                       justifyContent: "flex-end"
                     } as CSSProperties & Record<string, string>}
                   >
-                    {topProducts.map((product: ProductType, index:number) => {
+                    {topProducts.map((product: ProductType, index: number) => {
                       return (
                         <SwiperSlide key={index}>
                           <Box
