@@ -21,8 +21,8 @@ import { type CartType } from "../types/CartType";
 
 
 
-export default function Register() {
-  const { register } = useUser() as UserContextType;
+export default function RegisterUser() {
+  const { registerUser } = useUser() as UserContextType;
   const { cart, registerCart } = useCart() as CartContextType;
 
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ export default function Register() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
-  const handleRegister = async () => {
+  const handleRegisterUser = async () => {
     if (password.length <= 4) {
       alert("パスワードは4文字以上で入力してください。");
       setPassword("");
@@ -44,7 +44,7 @@ export default function Register() {
       orders: [],
       favorites: []
     };
-    const registeredUser = await register(newUser, password);
+    const registeredUser = await registerUser(newUser, password);
 
     // カート情報を作成
     const newCart: CartType = {
@@ -173,7 +173,7 @@ export default function Register() {
                     width: "35%",
                   }}
                 >
-                  <RunButton text={"登録する"} handleClick={handleRegister} />
+                  <RunButton text={"登録する"} handleClick={handleRegisterUser} />
                 </Box>
               </Box>
               {/* (end)ログインBox */}

@@ -13,7 +13,7 @@ export interface UserContextType {
   isAuthenticated: boolean;
   user: UserType | null;
   setUser: Dispatch<SetStateAction<UserType | null>>;
-  register: (userInfo: UserType, password: string) => Promise<UserType>;
+  registerUser: (userInfo: UserType, password: string) => Promise<UserType>;
   login: (email: string, password: string) => Promise<UserType | null>;
   logout: () => void;
   changeUserInfo: (userId: string, name: string, email: string) => Promise<UserType | null>;
@@ -33,7 +33,7 @@ export function UserProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<UserType | null>(null);
 
 
-  const register = async (userInfo: UserType, password: string) => {
+  const registerUser = async (userInfo: UserType, password: string) => {
     const res = await axios.post(UserUrl, { userInfo, password });
     const { email } = res.data;
 
@@ -289,7 +289,7 @@ export function UserProvider({ children }: PropsWithChildren) {
         isAuthenticated,
         user,
         setUser,
-        register,
+        registerUser,
         login,
         logout,
         changeUserInfo,

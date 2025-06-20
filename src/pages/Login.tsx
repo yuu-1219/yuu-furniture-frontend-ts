@@ -33,7 +33,7 @@ export default function Login() {
 
 
   const onClickRegister = () => {
-    navigate("/register");
+    navigate("/registerUser");
   };
 
   const onClickLogin = async () => {

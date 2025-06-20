@@ -9,7 +9,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Complete from "./pages/Complete";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
+import RegisterProduct from "./pages/RegisterProduct";
+import RegisterUser from "./pages/RegisterUser";
 import UserPage from "./pages/UserPage";
 import OrderHistory from "./pages/OrderHistory";
 import UserInfo from "./pages/UserInfo";
@@ -24,11 +25,12 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/products/register" element={<RegisterProduct />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/complete" element={<Complete />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/registerUser" element={<RegisterUser />} />
         <Route path="/user/:id" element={<UserPage />} />
         <Route path="/user/:id/order-history" element={<OrderHistory />} />
         <Route path="/user/:id/info" element={<UserInfo />} />
