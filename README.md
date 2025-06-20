@@ -24,7 +24,7 @@ TypeScript(React) + Node.js + MongoDBで構成し、商品閲覧からカート�
 - フロント：HTML / CSS / TypeScript / React(Material UI含む)
 - バックエンド：Node.js / Express
 - データベース：MongoDB（Mongoose, Atlas）
-- デプロイ：AWS(EC2, Route53, ALB, S3)
+- デプロイ：AWS(EC2, ALB, WAF, Route53, S3)
 - その他：Git / GitHub
   
 
